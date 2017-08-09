@@ -37,6 +37,10 @@ public class JsonpropTest {
         MDC.put("test","ja");
 //        Marker ipArgument = Markers.append("exampleResult", r);
         Marker ipArgument = Markers.appendFields(r);
+
+        //not meage old code and new code
+        ipArgument.add(Markers.append("code","1"));
+
         StructuredArgument sa= StructuredArguments.value("sa",r);
         loggerStash.info(ipArgument,"json convert of sa",sa);
 

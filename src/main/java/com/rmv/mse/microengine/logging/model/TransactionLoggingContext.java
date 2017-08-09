@@ -67,9 +67,12 @@ public class TransactionLoggingContext {
 
 
 
+    //beware, marker not merge json element , lead to duplicate element
     public void appendActivityFields(Object o) {
         activityMarker.add(Markers.appendFields(o));
     }
+
+    //beware, marker not merge json element , lead to duplicate element
     public void appendTransactionFields(Object o) {
         transactionMarker.add(Markers.appendFields(o));
     }

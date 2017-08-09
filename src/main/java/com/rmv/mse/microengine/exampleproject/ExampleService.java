@@ -14,6 +14,10 @@ import java.sql.ResultSet;
 public class ExampleService {
 
 
+    @Autowired
+    TransactionLoggingContextFactory transactionLoggingContextFactory;
+
+
     /**
      * Show auto log the response
      */
@@ -30,12 +34,11 @@ public class ExampleService {
 
 
     @ActivityLogging
-    public ExampleResult appendFieldActivityLevel(TransactionLoggingContext transactionLoggingContext) {
-
+    public ExampleResult appendFieldActivityLevel() {
+        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
         transactionLoggingContext.appendActivityFields(new ObjectWithField());
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
-
 
 
     /**
@@ -44,28 +47,23 @@ public class ExampleService {
      */
     @ActivityLogging
     @NotLogResponse
-    public ResultSet doActivityNotLogResponse(TransactionLoggingContext transactionLoggingContext) {
+    public ResultSet doActivityNotLogResponse() {
+        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
         transactionLoggingContext.appendActivityFields(ActivityResult.SUCCESS);
 
         return null;
     }
 
 
-
-
     /**
      * apply member field to tran level
      */
     @ActivityLogging
-    public ExampleResult appendFieldTranLevel(TransactionLoggingContext transactionLoggingContext) {
-
-        transactionLoggingContext.appendTransactionFields(ActivityResult.SUCCESS);
+    public ExampleResult appendFieldTranLevel() {
+        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
+        transactionLoggingContext.appendTransactionFields(new ObjectWithField());
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
-
-
-    @Autowired
-    TransactionLoggingContextFactory transactionLoggingContextFactory;
 
     /**
      * Example of ActivityLogging Logging
@@ -73,7 +71,7 @@ public class ExampleService {
      * Support feature:
      *
      * @LogParam log the request parameter
-     *
+     * <p>
      * MDC: log in thread level
      */
     @ActivityLogging
@@ -82,11 +80,11 @@ public class ExampleService {
             String password
 
     ) {
-        TransactionLoggingContext transactionLoggingContext=transactionLoggingContextFactory.getInFightContext();
+        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
         //transaction level
         transactionLoggingContext.getTransactionLogMap().put(LoggingKey.IMSI, "5200099998888");
         //activity level
-        transactionLoggingContext.getActivityLogMap().put("am_request_id","22222");
+        transactionLoggingContext.getActivityLogMap().put("am_request_id", "22222");
 
         //dosomething
 
@@ -94,9 +92,9 @@ public class ExampleService {
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
-    class ObjectWithField{
-        int field1=5;
-        String field2="hahaa";
+    class ObjectWithField {
+        int field1 = 5;
+        String field2 = "hahaa";
 
         public int getField1() {
             return field1;

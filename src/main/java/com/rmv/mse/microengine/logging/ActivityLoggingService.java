@@ -28,10 +28,14 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 @Aspect
 @Component
@@ -41,6 +45,9 @@ public class ActivityLoggingService {
 	@Value("microengine.logging.servicename")
 	String servicename;
 
+
+	@Autowired
+    TransactionLoggingContextFactory transactionLoggingContextFactory;
 
 	String host;
 
@@ -79,32 +86,25 @@ public class ActivityLoggingService {
 
         MethodMetaData methodMetaData = classMetaDataCache.getCachedClass().get(c).getActivtyMethod().get(methodName);
         Method method = methodMetaData.getMethod();
-        int posOfTransactionLogging = methodMetaData.getPosOfTransactionLogging();
-        TransactionLoggingContext transactionLoggingContext=null;
-        Marker activityMarker= Markers.appendFields(null);
-        boolean modify_param=false;
-        if(posOfTransactionLogging>=0){
-            modify_param=true;
-            transactionLoggingContext= (TransactionLoggingContext) pjp.getArgs()[posOfTransactionLogging];
-            transactionLoggingContext.setActivityMarker(activityMarker);
-            transactionLoggingContext.getActivityLogMap().clear();
-        }else{
 
-        }
+        TransactionLoggingContext transactionLoggingContext=transactionLoggingContextFactory.getInFightContext();
+        Marker activityMarker= Markers.appendFields(new Object());
+
+        transactionLoggingContext.setActivityMarker(activityMarker);
+        transactionLoggingContext.getActivityLogMap().clear();
+
 //        findTransactionLoggingParam(pjp);
 
         long begin =System.currentTimeMillis();
 		try {
-		    if(modify_param){
-		        retVal=pjp.proceed(pjp.getArgs());
-            }
-            else
+
                 retVal = pjp.proceed();
 			//no exception
 
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
             throwActivityResult=new ActivityResult(Error.E77000,"SBM",methodName+" exception:"+throwable.getMessage());
+            t=throwable;
 	//		throw throwable;
 		}
 		// stop stopwatch
@@ -116,23 +116,31 @@ public class ActivityLoggingService {
 		message.setProcessTime(diff);
 		message.setActivity(methodName);
 
-		//apply map to marker with priority: t->a->marker
-        if(transactionLoggingContext!=null) {
-            activityMarker.add(Markers.appendEntries(transactionLoggingContext.getTransactionLogMap()));
-            activityMarker.add(Markers.appendEntries(transactionLoggingContext.getActivityLogMap()));
-        }
+		//apply map to marker with priority: retval union marker  union( a map-> t map)
+        Map<String,Object> mapToLog=new HashMap<>();
+        mapToLog.putAll(transactionLoggingContext.getTransactionLogMap());
+        mapToLog.putAll(transactionLoggingContext.getActivityLogMap());
+        activityMarker.add(Markers.appendEntries(mapToLog));
+        activityMarker.add(transactionLoggingContext.getTransactionMarker());
+
         activityMarker.add(Markers.appendFields(message));
+
         if(methodMetaData.isLogResponse()){
             activityMarker.add(Markers.appendFields(retVal));
         }
 
 
         if(t !=null){
-            loggerStash.error(activityMarker,"Process activity {} for {} ms with {}",methodName,diff,throwActivityResult,t);
+            activityMarker.add(Markers.appendFields(throwActivityResult));
+            loggerStash.error(activityMarker,"Process activity {} for {} ms with {}",methodName,diff,throwActivityResult);
+            activityMarker=null;
+            mapToLog=null;
             throw  t;
         }
         else{
             loggerStash.info(activityMarker,"Process activity {} for {} ms with {}",methodName,diff,retVal);
+            activityMarker=null;
+            mapToLog=null;
             return retVal;
         }
 	}
