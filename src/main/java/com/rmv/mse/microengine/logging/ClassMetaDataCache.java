@@ -1,11 +1,12 @@
 package com.rmv.mse.microengine.logging;
 
-import com.rmv.mse.microengine.logging.annotation.Activity;
-import com.rmv.mse.microengine.logging.annotation.LogMDC;
-import com.rmv.mse.microengine.logging.annotation.LogParam;
+import com.rmv.mse.microengine.logging.annotation.ActivityLogging;
+import com.rmv.mse.microengine.logging.annotation.NotLogResponse;
+import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
 import com.rmv.mse.microengine.logging.exception.ActivityLoggingException;
+import com.rmv.mse.microengine.logging.model.ClassMetaData;
+import com.rmv.mse.microengine.logging.model.MethodMetaData;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ public class ClassMetaDataCache {
 
     /**
      * Cache class verification
-     * - method with @Activity must not overloaded
+     * - method with @ActivityLogging must not overloaded
      * - V8.8 support TransactionLoggingContext param
      * @param c
      * @return
@@ -49,14 +50,13 @@ public class ClassMetaDataCache {
             for (Method method : c.getMethods())
             {
                 //only method with @activity
-                if(method.getAnnotation(Activity.class)!=null) {
+                if(method.getAnnotation(ActivityLogging.class)!=null) {
                     MethodMetaData methodMetaData = new MethodMetaData(method);
                     classMetaData.getActivtyMethod().put(method.getName(), methodMetaData);
-                    //find @logParam
-                    methodMetaData.setPositionOfLogParam( mapLogParam(method));
-                    //find TransactionLoggingContext
-                    methodMetaData.setPosOfLogMDC(findLogMDCPosition(method));
-
+                    methodMetaData.setPosOfTransactionLogging( findPosOfTransactionLoggingContext(method));
+                    if(method.getAnnotation(NotLogResponse.class)!=null){
+                        methodMetaData.setLogResponse(false);
+                    }
                 }
 
             }
@@ -66,41 +66,19 @@ public class ClassMetaDataCache {
 
     }
 
-    public int findLogMDCPosition(Method method) {
+    protected int findPosOfTransactionLoggingContext(Method method) {
         int i=0;
-        for(Annotation[] annotations:method.getParameterAnnotations()){
-            //TODO : support subclass
-            for(Annotation a:annotations) {
-                if (a instanceof LogMDC) {
-                    return i;
-                }
+        for(Class pt:method.getParameterTypes()){
 
+            if(pt== TransactionLoggingContext.class){
+                return i;
             }
             i++;
+
         }
         return -1;
     }
 
-    /**
-     * Map position to paramName
-     * @param method
-     * @return
-     */
-    public Map<Integer, String> mapLogParam(Method method) {
-        Map<Integer,String> positionOfLogParam=new HashMap<>();
-        int pos=0;
-        for ( Annotation[] annotations:method.getParameterAnnotations()){
-            for (Annotation annotation : annotations) {
-                if (annotation instanceof LogParam) {
-                    LogParam logParamAnnotation = (LogParam) annotation;
-                    String paramName=logParamAnnotation.value();
-                    positionOfLogParam.put(pos,paramName);
-                }
-            }
-            pos++;
-        }
-        return positionOfLogParam;
-    }
 
     /**
      * Overload method is not supported
@@ -111,7 +89,7 @@ public class ClassMetaDataCache {
         for (Method method : methods)
         {
             //only method with @activity
-            if(method.getAnnotation(Activity.class)==null) continue;
+            if(method.getAnnotation(ActivityLogging.class)==null) continue;
             if (pool.contains(method.getName())) return true;
             pool.add(method.getName());
         }
@@ -128,17 +106,6 @@ public class ClassMetaDataCache {
 
     }
 
-    public Map<String, Object> getAnnotatedParameterValue(Class c,String methodName, Object[] args) {
-        Map<String, Object> ret=new HashMap<>();
-        assert (cachedClass.containsKey(c));
-        Map<Integer,String> posToKey=cachedClass.get(c).getActivtyMethod().get(methodName).getPositionOfLogParam();
-        for (Integer pos : posToKey.keySet()) {
-
-            ret.put(posToKey.get(pos),args[pos]);
-
-        }
-        return ret;
-    }
 
     public Map<Class, ClassMetaData> getCachedClass() {
         return cachedClass;

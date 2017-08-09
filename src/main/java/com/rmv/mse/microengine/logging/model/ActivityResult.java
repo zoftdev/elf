@@ -1,8 +1,5 @@
 package com.rmv.mse.microengine.logging.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rmv.mse.microengine.logging.annotation.Activity;
-
 /**
  * Created by zoftdev on 8/7/2017.
  * Any method that return this class will be logged.
@@ -21,12 +18,8 @@ public class ActivityResult {
         this.description = description;
     }
 
-    public   ActivityResult sucess(){
-        code="0";
-        namespace="SBM";
-        description="sucess";
-        return this;
-    }
+    public static final ActivityResult SUCCESS= new ActivityResult("0","SBM","Success");;
+
 
     public String getCode() {
         return code;
@@ -53,6 +46,11 @@ public class ActivityResult {
     }
 
 
+    @Override
+    public String toString() {
+        return    code + '|' +
+                 namespace + '|' +
+                 description ;
 
-
+    }
 }

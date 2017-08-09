@@ -1,13 +1,14 @@
 package com.rmv.mse.microengine.exampleproject;
 
+import com.rmv.mse.microengine.logging.LoggingKey;
+import com.rmv.mse.microengine.logging.TransactionLoggingContextFactory;
 import com.rmv.mse.microengine.logging.annotation.*;
+import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
 import com.rmv.mse.microengine.logging.model.ActivityResult;
-import net.logstash.logback.marker.Markers;
-import org.slf4j.MDC;
-import org.slf4j.Marker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.sql.ResultSet;
 
 @Service
 public class ExampleService {
@@ -16,70 +17,95 @@ public class ExampleService {
     /**
      * Show auto log the response
      */
-    @Activity
+    @ActivityLogging
     public ExampleResult doActivityLogResult() {
-        return new ExampleResult("0","SBM","Success","3AAAF");
+        return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
+
+
+    @ActivityLogging
+    public ExampleResult doException() {
+        throw new RuntimeException("test exception");
+    }
+
+
+    @ActivityLogging
+    public ExampleResult appendFieldActivityLevel(TransactionLoggingContext transactionLoggingContext) {
+
+        transactionLoggingContext.appendActivityFields(new ObjectWithField());
+        return new ExampleResult("0", "SBM", "Success", "3AAAF");
+    }
+
 
 
     /**
      * Show manual log the response
      * for some function not prefer to use ActivityResult class
      */
-    @Activity
+    @ActivityLogging
     @NotLogResponse
-    public boolean doActivityNotLogResponse(@ActivityMarker Marker marker) {
-        marker.add(Markers.appendFields(new ActivityResult("0","SBM","Success")));
-        return true;
+    public ResultSet doActivityNotLogResponse(TransactionLoggingContext transactionLoggingContext) {
+        transactionLoggingContext.appendActivityFields(ActivityResult.SUCCESS);
+
+        return null;
     }
 
 
 
 
     /**
-     *  Example of Activity Logging
-     *  Class with @Activity will be logged for kinana at the end of method automatically ( AOP ).
-     *  Support feature:
-     *      @LogParam log the request parameter
-     *      @ActivityMarker : log marker in activity level : see slf4j's marker
-     *      @TransactionMarker : log marker in transaction level
-     *      MDC: log in thread level
+     * apply member field to tran level
      */
-    @Activity
-    public ExampleResult exampleLogging(@LogParam("name") String name,String password,
-                                    @ActivityMarker Marker marker,
-                                    @TransactionMarker Marker transactionMarker) {
-        //put to transaction level
-        MDC.put("ip","172.0.1.1");
+    @ActivityLogging
+    public ExampleResult appendFieldTranLevel(TransactionLoggingContext transactionLoggingContext) {
 
-        //put to activity level
-        marker.add(Markers.append("key","value"));
-        marker.add(Markers.appendArray("key","this","array","will","be","added"));
+        transactionLoggingContext.appendTransactionFields(ActivityResult.SUCCESS);
+        return new ExampleResult("0", "SBM", "Success", "3AAAF");
+    }
 
-        HashMap<String,String> map=new HashMap<>();
-        map.put("k1","v1");
-        marker.add(Markers.appendEntries(map));
 
-        marker.add(Markers.appendArray("key","this","array","will","be","added"));
-        marker.add(Markers.appendRaw("I","{\"am\":\"json\"}"));
+    @Autowired
+    TransactionLoggingContextFactory transactionLoggingContextFactory;
 
-        transactionMarker.add(Markers.append("IMSI","5200010000"));
+    /**
+     * Example of ActivityLogging Logging
+     * Class with @ActivityLogging will be logged for kinana at the end of method automatically ( AOP ).
+     * Support feature:
+     *
+     * @LogParam log the request parameter
+     *
+     * MDC: log in thread level
+     */
+    @ActivityLogging
+    public ExampleResult exampleLogging(
+            String name,
+            String password
+
+    ) {
+        TransactionLoggingContext transactionLoggingContext=transactionLoggingContextFactory.getInFightContext();
+        //transaction level
+        transactionLoggingContext.getTransactionLogMap().put(LoggingKey.IMSI, "5200099998888");
+        //activity level
+        transactionLoggingContext.getActivityLogMap().put("am_request_id","22222");
 
         //dosomething
 
         //return field will logged (exclude by @Nolog : check ExampleResult class)
-        return new ExampleResult("0", "SBM", "This is a test", "111");
+        return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
+    class ObjectWithField{
+        int field1=5;
+        String field2="hahaa";
 
+        public int getField1() {
+            return field1;
+        }
 
-
-
-
-
-
-
-
+        public String getField2() {
+            return field2;
+        }
+    }
 }
 
 

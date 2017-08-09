@@ -16,24 +16,22 @@
 
 package com.rmv.mse.microengine.logging;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.rmv.mse.microengine.logging.annotation.Transaction;
-import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
-import com.rmv.mse.microengine.logging.exception.ActivityLoggingException;
+import com.rmv.mse.microengine.logging.model.ActivityLoggingMessage;
+import com.rmv.mse.microengine.logging.model.ActivityResult;
+import com.rmv.mse.microengine.logging.model.MethodMetaData;
+import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
+import net.logstash.logback.marker.Markers;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 @Aspect
 @Component
@@ -43,7 +41,6 @@ public class ActivityLoggingService {
 	@Value("microengine.logging.servicename")
 	String servicename;
 
-    MDCLinkedHashMap mdcLinkedHashMap=new MDCLinkedHashMap();
 
 	String host;
 
@@ -52,16 +49,15 @@ public class ActivityLoggingService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger loggerStash = LoggerFactory.getLogger("stash");
 
-    @Around("@annotation(com.rmv.mse.microengine.logging.annotation.Transaction)")
+    @Around("@annotation(com.rmv.mse.microengine.logging.annotation.TransactionLogging)")
     public Object transactionLogging(ProceedingJoinPoint pjp)throws Throwable{
         //clean and regist to mdc;
-        mdcLinkedHashMap.remove(Thread.currentThread());
-        mdcLinkedHashMap.put(Thread.currentThread(),new TransactionLoggingContext());
+
         Object ret=null;
         try {
              ret = pjp.proceed();
         } finally {
-            mdcLinkedHashMap.remove(Thread.currentThread());
+
             logger.info("exit tran logging");
         }
 
@@ -70,52 +66,46 @@ public class ActivityLoggingService {
         return ret;
     }
 
-	@Around("@annotation(com.rmv.mse.microengine.logging.annotation.Activity)")
+	@Around("@annotation(com.rmv.mse.microengine.logging.annotation.ActivityLogging)")
 	public Object activityLogging(ProceedingJoinPoint pjp) throws Throwable {
 		// start stopwatch
+        Throwable t=null;
+        ActivityResult throwActivityResult=null;
 		Object retVal = null;
         String methodName=pjp.getSignature().getName();
         Class c=pjp.getSignature().getDeclaringType();
         classMetaDataCache.initialize(c);
-        Method method = classMetaDataCache.getActivtyMethod(c,methodName);
-        Map<String, Object> annotatedParameterValue =classMetaDataCache.getAnnotatedParameterValue(c,methodName, pjp.getArgs());
 
-        ClassMetaData classMetaData = classMetaDataCache.getCachedClass().get(c);
-        MethodMetaData methodMetaData = classMetaData.getActivtyMethod().get(methodName);
 
-        boolean mdcFound=false;
-        boolean mdcOnThread=false;
-        Map mdc=null;
-        //check MDC position in param
-        if(methodMetaData.getPosOfLogMDC()>=0){
-            mdcFound=true;
+        MethodMetaData methodMetaData = classMetaDataCache.getCachedClass().get(c).getActivtyMethod().get(methodName);
+        Method method = methodMetaData.getMethod();
+        int posOfTransactionLogging = methodMetaData.getPosOfTransactionLogging();
+        TransactionLoggingContext transactionLoggingContext=null;
+        Marker activityMarker= Markers.appendFields(null);
+        boolean modify_param=false;
+        if(posOfTransactionLogging>=0){
+            modify_param=true;
+            transactionLoggingContext= (TransactionLoggingContext) pjp.getArgs()[posOfTransactionLogging];
+            transactionLoggingContext.setActivityMarker(activityMarker);
+            transactionLoggingContext.getActivityLogMap().clear();
+        }else{
 
-            //check thread MDC?
-            TransactionLoggingContext transactionLoggingContext = mdcLinkedHashMap.get(Thread.currentThread());
-
-            if(transactionLoggingContext==null){
-                //localMDC
-                mdc=new HashMap();
-            }else{
-                //thread MDC
-                mdc=transactionLoggingContext.getMap();
-                mdcOnThread=true;
-            }
-
-            pjp.getArgs()[methodMetaData.getPosOfLogMDC()]=mdc;
         }
+//        findTransactionLoggingParam(pjp);
 
-//        Map<String, Object> annotatedParameterValue = getAnnotatedParameterValue(method, pjp.getArgs());
         long begin =System.currentTimeMillis();
 		try {
-            retVal = pjp.proceed(pjp.getArgs());
+		    if(modify_param){
+		        retVal=pjp.proceed(pjp.getArgs());
+            }
+            else
+                retVal = pjp.proceed();
 			//no exception
 
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
-			//have exception
-            //TODO
-			throw throwable;
+            throwActivityResult=new ActivityResult(Error.E77000,"SBM",methodName+" exception:"+throwable.getMessage());
+	//		throw throwable;
 		}
 		// stop stopwatch
 		long end=System.currentTimeMillis();
@@ -123,33 +113,28 @@ public class ActivityLoggingService {
 
 		ActivityLoggingMessage message=new ActivityLoggingMessage();
 		message.setBegin(begin);
-
-		message.setDiff(diff);
-		message.setRequest(annotatedParameterValue);
-		message.setResponse(retVal);
+		message.setProcessTime(diff);
 		message.setActivity(methodName);
-        loggerStash.info("{}",message);
-//		String messageString=objectMapper.writeValueAsString(message);
-//        JsonNode jsonNode = objectMapper.convertValue(message, JsonNode.class);
 
-
-
-
-
-
-//        messageString=jsonNode.toString();
-
-
-//        objectMapper.writeValue(g,testMap);
-        if(mdc!=null)
-		logger.info("mdc: {}",mdc);
-		logger.info("activityLogging: {}",message);
-
-		if(!mdcOnThread){
-		    mdc=null;
+		//apply map to marker with priority: t->a->marker
+        if(transactionLoggingContext!=null) {
+            activityMarker.add(Markers.appendEntries(transactionLoggingContext.getTransactionLogMap()));
+            activityMarker.add(Markers.appendEntries(transactionLoggingContext.getActivityLogMap()));
+        }
+        activityMarker.add(Markers.appendFields(message));
+        if(methodMetaData.isLogResponse()){
+            activityMarker.add(Markers.appendFields(retVal));
         }
 
-		return retVal;
+
+        if(t !=null){
+            loggerStash.error(activityMarker,"Process activity {} for {} ms with {}",methodName,diff,throwActivityResult,t);
+            throw  t;
+        }
+        else{
+            loggerStash.info(activityMarker,"Process activity {} for {} ms with {}",methodName,diff,retVal);
+            return retVal;
+        }
 	}
 
 }

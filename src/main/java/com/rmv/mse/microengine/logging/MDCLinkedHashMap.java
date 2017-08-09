@@ -1,6 +1,6 @@
 package com.rmv.mse.microengine.logging;
 
-import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

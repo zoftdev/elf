@@ -1,6 +1,5 @@
-package com.rmv.mse.microengine.logging;
+package com.rmv.mse.microengine.logging.model;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 

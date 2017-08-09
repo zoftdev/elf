@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rmv.mse.microengine.logging.annotation.NoLog;
 import com.rmv.mse.microengine.logging.model.ActivityResult;
 
-public  class ExampleResult extends ActivityResult {
-        private String messageid;
-        @NoLog
-        private String new_password;
+public class ExampleResult extends ActivityResult {
+    private String messageid;
+    @NoLog
+    private String new_password;
+
 
 
     public ExampleResult() {
@@ -15,19 +16,19 @@ public  class ExampleResult extends ActivityResult {
     }
 
     public ExampleResult(String code, String namespace, String description, String messageid) {
-            super(code, namespace, description);
-            this.messageid=messageid;
+        super(code, namespace, description);
+        this.messageid = messageid;
 
-        }
+    }
 
 
-        public String getMessageid() {
-            return messageid;
-        }
+    public String getMessageid() {
+        return messageid;
+    }
 
-        public void setMessageid(String messageid) {
-            this.messageid = messageid;
-        }
+    public void setMessageid(String messageid) {
+        this.messageid = messageid;
+    }
 
     public String getNew_password() {
         return new_password;
