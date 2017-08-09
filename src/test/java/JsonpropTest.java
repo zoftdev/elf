@@ -47,11 +47,18 @@ public class JsonpropTest {
         ExampleResult r=new ExampleResult("0","SBM","okkkkk","11101");
         r.setNew_password("z");
 
+
+        Marker marker=Markers.appendFields(null);
+         marker=Markers.appendFields(r);
+
         HashMap<String,String>map=new HashMap<>();
         map.put("k1","v1");
-
-        Marker marker=Markers.appendFields(r);
         marker.add(Markers.appendEntries(map));
+
+        marker.add(Markers.appendArray("key","this","array","will","be","added"));
+        marker.add(Markers.appendRaw("I","{\"am\":\"json\"}"));
+
+
         loggerStash.info(marker,"json convert of sa");
 
 

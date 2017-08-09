@@ -36,7 +36,7 @@ public class ExampleTransactionTest {
 
         service.doActivity("hlex","password");
         service.doActivity(null,"password");
-        service.doBasic("test");
+
     }
 
 }

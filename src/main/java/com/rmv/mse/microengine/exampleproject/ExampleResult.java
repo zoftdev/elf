@@ -1,13 +1,20 @@
 package com.rmv.mse.microengine.exampleproject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rmv.mse.microengine.logging.annotation.NoLog;
 import com.rmv.mse.microengine.logging.model.ActivityResult;
 
 public  class ExampleResult extends ActivityResult {
-        @JsonProperty
         private String messageid;
+        @NoLog
         private String new_password;
-        public ExampleResult(String code, String namespace, String description, String messageid) {
+
+
+    public ExampleResult() {
+        super();
+    }
+
+    public ExampleResult(String code, String namespace, String description, String messageid) {
             super(code, namespace, description);
             this.messageid=messageid;
 

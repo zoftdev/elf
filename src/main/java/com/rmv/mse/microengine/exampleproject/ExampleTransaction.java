@@ -4,9 +4,13 @@ import com.rmv.mse.microengine.logging.LoggingKey;
 import com.rmv.mse.microengine.logging.annotation.LogMDC;
 import com.rmv.mse.microengine.logging.annotation.LogParam;
 import com.rmv.mse.microengine.logging.annotation.Transaction;
+import com.rmv.mse.microengine.logging.annotation.TransactionMarker;
 import com.rmv.mse.microengine.logging.model.TransactionResult;
+import net.logstash.logback.marker.Markers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +27,6 @@ public class ExampleTransaction {
     @Autowired
     ExampleService exampleService;
 
-    @Transaction
-    public String example_very_simple() {
-
-        //do something
-
-        return "ok";
-    }
 
 
     /**
@@ -37,6 +34,7 @@ public class ExampleTransaction {
      */
     @Transaction
     public TransactionResult example_hello_world() {
+
         TransactionResult ret = new TransactionResult().setTransactionId("1234");
         //do something
         return ret.setTranCode("0").setTranDesc("Success");
@@ -57,28 +55,16 @@ public class ExampleTransaction {
     }
 
 
-    /**
-     * This example show log msisdn recursively
-     */
-    @Transaction
-    public TransactionResult example_log_param_recursive(
-            @LogParam(value=LoggingKey.MSISDN,recursive=true) String msisdn,
-            @LogParam(LoggingKey.REQUEST_ID)String requestId
-    ) {
-
-        exampleService.doActivity("hlex","java");
-        return new TransactionResult().setTranCode("0").setTranDesc("Success");
-    }
-
-
 
 
     /**
      * This example show log transactionId to transaction+activity
      */
     @Transaction
-    public TransactionResult example_log_inside(String username , @LogMDC Map<String,Object> logMDC) {
-        logMDC.put(LoggingKey.TRANSACTIONID, UUID.randomUUID().toString());
+    public TransactionResult example_log_inside(String username , @TransactionMarker Marker marker) {
+
+        MDC.put(LoggingKey.TRANSACTIONID, UUID.randomUUID().toString());
+        marker.add(Markers.append(LoggingKey.MSISDN,"2222"));
 
         //do something
 
@@ -91,7 +77,7 @@ public class ExampleTransaction {
      */
     @Transaction
     public TransactionResult withActivity() {
-        exampleService.doActivity("hlex","java");
+        exampleService.exampleLogging("hlex","java",null,null);
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 
@@ -100,15 +86,14 @@ public class ExampleTransaction {
      */
     @Transaction
     public TransactionResult fullSet(
-            @LogParam(value=LoggingKey.MSISDN,recursive=true) String msisdn,
+            @LogParam(value=LoggingKey.MSISDN) String msisdn,
             @LogParam(LoggingKey.REQUEST_ID)String requestId,
-            @LogMDC Map<String,Object> logMDC
+            @TransactionMarker Marker marker
+
     ) {
-        logMDC.put(LoggingKey.TRANSACTIONID, UUID.randomUUID().toString());
-
-        exampleService.doActivity("hlex","java");
-        exampleService.doBasic("hlex" );
-
+        MDC.put(LoggingKey.TRANSACTIONID, UUID.randomUUID().toString());
+        marker.add(Markers.append(LoggingKey.MSISDN,"2222"));
+        exampleService.exampleLogging("hlex","java",null,null);
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 

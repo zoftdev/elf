@@ -16,18 +16,13 @@ public class ExampleActivityOnlyTests {
 
 
 
-	@Test
-	public  void doLogMDC(){
-		service.doLogMDC("test",null);
-	}
-
 
 	@Test
 	public void example_devOnlyActivity() {
 
 		service.doActivity("hlex","password");
 		service.doActivity(null,"password");
-		service.doBasic("test");
+
 	}
 
 
