@@ -1,12 +1,17 @@
 package com.rmv.mse.microengine.logging.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by zoftdev on 8/7/2017.
  * Any method that return this class will be logged.
  */
 public class ActivityResult {
+    @JsonProperty
     String code;
+    @JsonProperty
     String namespace;
+    @JsonProperty
     String description;
 
 

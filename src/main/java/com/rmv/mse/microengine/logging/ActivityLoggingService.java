@@ -128,7 +128,7 @@ public class ActivityLoggingService {
 		message.setRequest(annotatedParameterValue);
 		message.setResponse(retVal);
 		message.setActivity(methodName);
-        loggerStash.info()
+        loggerStash.info("{}",message);
 //		String messageString=objectMapper.writeValueAsString(message);
 //        JsonNode jsonNode = objectMapper.convertValue(message, JsonNode.class);
 
