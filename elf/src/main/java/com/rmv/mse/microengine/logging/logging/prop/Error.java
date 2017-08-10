@@ -1,4 +1,4 @@
-package com.rmv.mse.microengine.logging.logging;
+package com.rmv.mse.microengine.logging.logging.prop;
 
 /**
  * Created by zoftdev on 8/9/2017.

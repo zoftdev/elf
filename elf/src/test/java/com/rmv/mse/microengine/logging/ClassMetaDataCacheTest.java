@@ -1,7 +1,7 @@
 package com.rmv.mse.microengine.logging;
 
 import com.rmv.mse.microengine.logging.logging.ClassMetaDataCache;
-import com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging;
+import com.rmv.mse.microengine.logging.logging.annotation.ActivityLog;
 import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import org.junit.Test;
 
@@ -21,20 +21,20 @@ public class ClassMetaDataCacheTest {
 
     class TestOverload {
 
-        @ActivityLogging
+        @ActivityLog
         public void test() {
 
         }
 
 
-        @ActivityLogging
+        @ActivityLog
         public void test(String name) {
 
         }
     }
 
     class TestNotOverload {
-        @ActivityLogging
+        @ActivityLog
         public void test() {
 
         }
@@ -51,22 +51,22 @@ public class ClassMetaDataCacheTest {
            }
 
     public class ClassWithParam{
-        @ActivityLogging
+        @ActivityLog
         public void pos0(LogContext c){
 
         }
-        @ActivityLogging
+        @ActivityLog
         public void noParam(){
 
         }
 
 
-        @ActivityLogging
+        @ActivityLog
         public void noContext(String a){
 
         }
 
-        @ActivityLogging
+        @ActivityLog
         public void pos1(String a,LogContext c){
 
         }

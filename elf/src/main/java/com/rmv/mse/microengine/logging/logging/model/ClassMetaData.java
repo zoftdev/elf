@@ -1,9 +1,5 @@
 package com.rmv.mse.microengine.logging.logging.model;
 
-import com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging;
-
-import java.lang.annotation.Annotation;
-import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Map;
 

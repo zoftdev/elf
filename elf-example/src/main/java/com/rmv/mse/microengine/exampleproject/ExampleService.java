@@ -1,6 +1,6 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.LoggingKey;
+import com.rmv.mse.microengine.logging.logging.prop.LoggingKey;
 import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import com.rmv.mse.microengine.logging.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.logging.annotation.*;
@@ -19,25 +19,25 @@ public class ExampleService {
     /**
      * Show auto log the response
      */
-    @ActivityLogging
+    @ActivityLog
     public ExampleResult doActivityLogResult() {
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
 
-    @ActivityLogging(name="newName")
+    @ActivityLog(name="newName")
     public ExampleResult doOverrideName() {
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
 
-    @ActivityLogging
+    @ActivityLog
     public ExampleResult doException() {
         throw new RuntimeException("test doException");
     }
 
 
-    @ActivityLogging
+    @ActivityLog
     public ExampleResult appendFieldActivityLevel() {
         LogContext logContext = logContextService.getCurrentContext();
         logContext.appendFieldsA(new ObjectWithField());
@@ -49,7 +49,7 @@ public class ExampleService {
      * Show manual log the response
      * for some function not prefer to use ActivityResult class
      */
-    @ActivityLogging(logResponse = false)
+    @ActivityLog(logResponse = false)
     public java.sql.ResultSet doActivityNotLogResponse() {
         LogContext logContext = logContextService.getCurrentContext();
         logContext.appendFieldsA(ActivityResult.SUCCESS);
@@ -61,7 +61,7 @@ public class ExampleService {
     /**
      * apply member field to tran level
      */
-    @ActivityLogging
+    @ActivityLog
     public ExampleResult appendFieldTranLevel() {
         LogContext logContext = logContextService.getCurrentContext();
         logContext.appendFieldsT(new ObjectWithField());
@@ -69,15 +69,15 @@ public class ExampleService {
     }
 
     /**
-     * Example of ActivityLogging Logging
-     * Class with @ActivityLogging will be logged for kinana at the end of method automatically ( AOP ).
+     * Example of ActivityLog Logging
+     * Class with @ActivityLog will be logged for kinana at the end of method automatically ( AOP ).
      * Support feature:
      *
      * @LogParam log the request parameter
      * <p>
      * MDC: log in thread level
      */
-    @ActivityLogging
+    @ActivityLog
     public ExampleResult exampleLogging(
             String name,
             String password
@@ -95,7 +95,7 @@ public class ExampleService {
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
-    @ActivityLogging
+    @ActivityLog
     public ActivityResult foo() {
         return ActivityResult.SUCCESS;
     }
@@ -115,7 +115,7 @@ public class ExampleService {
     }
 
 
-    @ActivityLogging
+    @ActivityLog
     public ExampleResult doSetMessage() {
         LogContext context = logContextService.getCurrentContext();
         context.putT(LoggingKey.MESSAGE,"test2");

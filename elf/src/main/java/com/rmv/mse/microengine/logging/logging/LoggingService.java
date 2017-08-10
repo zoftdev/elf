@@ -22,6 +22,8 @@ import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
 import com.rmv.mse.microengine.logging.logging.model.ClassMetaData;
 import com.rmv.mse.microengine.logging.logging.model.MethodMetaData;
 import com.rmv.mse.microengine.logging.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.logging.prop.Error;
+import com.rmv.mse.microengine.logging.logging.prop.LoggingKey;
 import net.logstash.logback.marker.Markers;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -56,9 +58,7 @@ public class LoggingService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger loggerStash = LoggerFactory.getLogger("stash");
 
-    //todo message
-
-    @Around("@annotation(com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging)")
+    @Around("@annotation(com.rmv.mse.microengine.logging.logging.annotation.TransactionLog)")
     public Object transactionLogging(ProceedingJoinPoint pjp)throws Throwable{
 
         //func name
@@ -124,7 +124,7 @@ public class LoggingService {
     }
 
     //todo overlap service
-	@Around("@annotation(com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging)")
+	@Around("@annotation(com.rmv.mse.microengine.logging.logging.annotation.ActivityLog)")
 	public Object activityLogging(ProceedingJoinPoint pjp) throws Throwable {
 		// start stopwatch
         Throwable t=null;

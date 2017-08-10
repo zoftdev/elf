@@ -1,4 +1,4 @@
-package com.rmv.mse.microengine.logging.logging;
+package com.rmv.mse.microengine.logging.logging.prop;
 
 import org.slf4j.Marker;
 

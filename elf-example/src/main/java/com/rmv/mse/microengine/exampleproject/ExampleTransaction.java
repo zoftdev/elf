@@ -1,10 +1,10 @@
 package com.rmv.mse.microengine.exampleproject;
 
+import com.rmv.mse.microengine.logging.logging.annotation.ActivityLog;
 import com.rmv.mse.microengine.logging.logging.context.ContextSignature;
-import com.rmv.mse.microengine.logging.logging.LoggingKey;
-import com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging;
+import com.rmv.mse.microengine.logging.logging.prop.LoggingKey;
 import com.rmv.mse.microengine.logging.logging.context.LogContextService;
-import com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging;
+import com.rmv.mse.microengine.logging.logging.annotation.TransactionLog;
 import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
 import com.rmv.mse.microengine.logging.logging.model.TransactionResult;
@@ -23,16 +23,13 @@ public class ExampleTransaction {
     @Autowired
     ExampleService exampleService;
 
-
-
-
     @Autowired
     LogContextService logContextService;
 
     /**
      * This example show pattern of return TransactionResult
      */
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult example_hello_world() {
 
         TransactionResult ret = new TransactionResult();
@@ -40,14 +37,14 @@ public class ExampleTransaction {
         return ret.setTranCode("0").setTranDesc("Success");
     }
 
-    @TransactionLogging(logResponse = false)
+    @TransactionLog(logResponse = false)
     public String notLogResponse() {
         logContextService.getCurrentContext().appendFieldsT(TransactionResult.SUCCESS);
         //do something
         return "test";
     }
 
-    @TransactionLogging(name = "newName")
+    @TransactionLog(name = "newName")
     public TransactionResult overrideName() {
 
         TransactionResult ret = new TransactionResult();
@@ -55,7 +52,7 @@ public class ExampleTransaction {
         return ret.setTranCode("0").setTranDesc("Success");
     }
 
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult log_id() {
         //Get id
         String transactionId = logContextService.getCurrentContext().getTransactionId();
@@ -71,7 +68,7 @@ public class ExampleTransaction {
     /**
      * This example show log msisdn recursively
      */
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult logging_and_pass_to_activity(
     ) {
         LogContext context = logContextService.getCurrentContext();
@@ -81,7 +78,7 @@ public class ExampleTransaction {
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult deepService(
     ) {
         LogContext context = logContextService.getCurrentContext();
@@ -100,18 +97,18 @@ public class ExampleTransaction {
     }
 
 
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult doException(){
         throw new RuntimeException("test");
     }
 
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult doExceptionFromService(){
         exampleService.doException();
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult doThreadService(){
 
         ContextSignature contextSignature= logContextService.getCurrentContextSignature();
@@ -139,7 +136,7 @@ public class ExampleTransaction {
      */
 
 
-    @TransactionLogging
+    @TransactionLog
     public TransactionResult doOverlapFunction(){
         exampleService.foo();
         someClass.subFunction();
@@ -151,13 +148,13 @@ public class ExampleTransaction {
     @Service
     class SomeClass{
 
-        @TransactionLogging
+        @TransactionLog
         public TransactionResult subFunction(){
             someActivity();
             return TransactionResult.SUCCESS;
         }
 
-        @ActivityLogging
+        @ActivityLog
         public ActivityResult someActivity(){
             return ActivityResult.SUCCESS;
         }

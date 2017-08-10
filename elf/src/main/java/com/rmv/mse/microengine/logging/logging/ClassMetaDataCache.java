@@ -1,7 +1,7 @@
 package com.rmv.mse.microengine.logging.logging;
 
-import com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging;
-import com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging;
+import com.rmv.mse.microengine.logging.logging.annotation.ActivityLog;
+import com.rmv.mse.microengine.logging.logging.annotation.TransactionLog;
 import com.rmv.mse.microengine.logging.logging.exception.ActivityLoggingException;
 import com.rmv.mse.microengine.logging.logging.model.ClassMetaData;
 import com.rmv.mse.microengine.logging.logging.model.MethodMetaData;
@@ -22,7 +22,7 @@ public class ClassMetaDataCache {
 
     /**
      * Cache class verification
-     * - method with @ActivityLogging must not overloaded
+     * - method with @ActivityLog must not overloaded
      * - V8.8 support LogContext param
      * @param c
      * @return
@@ -49,8 +49,8 @@ public class ClassMetaDataCache {
             for (Method method : c.getMethods())
             {
                 //only method with @activity
-                if(method.getAnnotation(ActivityLogging.class)!=null) {
-                    ActivityLogging annotation = method.getAnnotation(ActivityLogging.class);
+                if(method.getAnnotation(ActivityLog.class)!=null) {
+                    ActivityLog annotation = method.getAnnotation(ActivityLog.class);
                     MethodMetaData methodMetaData = new MethodMetaData(method);
                     classMetaData.getActivtyMethod().put(method.getName(), methodMetaData);
                     methodMetaData.setLogResponse( annotation.logResponse());
@@ -59,8 +59,8 @@ public class ClassMetaDataCache {
                     }
                 }
                 //only method with @transactionLogging
-                if(method.getAnnotation(TransactionLogging.class)!=null) {
-                    TransactionLogging annotation = method.getAnnotation(TransactionLogging.class);
+                if(method.getAnnotation(TransactionLog.class)!=null) {
+                    TransactionLog annotation = method.getAnnotation(TransactionLog.class);
                     MethodMetaData methodMetaData = new MethodMetaData(method);
                     classMetaData.getTransactionMethod().put(method.getName(), methodMetaData);
                     methodMetaData.setLogResponse( annotation.logResponse());
@@ -88,7 +88,7 @@ public class ClassMetaDataCache {
         for (Method method : methods)
         {
             //only method with @activity
-            if(method.getAnnotation(ActivityLogging.class)==null) continue;
+            if(method.getAnnotation(ActivityLog.class)==null) continue;
             if (pool.contains(method.getName())) return true;
             pool.add(method.getName());
         }
