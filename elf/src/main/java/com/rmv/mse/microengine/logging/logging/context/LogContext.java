@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by zoftdev on 8/7/2017.
  */
-
-public class TransactionLoggingContext {
+//todo revise method
+public class LogContext {
     String transactionId;
     Map<String,Object> transactionLogMap;
     Map<String,Object> activityLogMap;
@@ -21,10 +21,10 @@ public class TransactionLoggingContext {
     //child
     Set<Thread> childThread=new ConcurrentHashMap().newKeySet();
 
-    private TransactionLoggingContext() {
+    private LogContext() {
     }
 
-    public TransactionLoggingContext(String transactionId, Map<String, Object> transactionLogMap, Map<String, Object> activityLogMap, Marker activityMarker, Marker transactionMarker) {
+    public LogContext(String transactionId, Map<String, Object> transactionLogMap, Map<String, Object> activityLogMap, Marker activityMarker, Marker transactionMarker) {
         this.transactionId = transactionId;
         this.transactionLogMap = transactionLogMap;
         this.activityLogMap = activityLogMap;
@@ -32,8 +32,8 @@ public class TransactionLoggingContext {
         this.transactionMarker = transactionMarker;
     }
 
-    public static  TransactionLoggingContext getDummy(){
-        return new TransactionLoggingContext(
+    public static LogContext createBasic(){
+        return new LogContext(
                 UUID.randomUUID().toString(),
                 new HashMap<>(),
                 new HashMap<>(),
@@ -43,40 +43,78 @@ public class TransactionLoggingContext {
 
     }
 
+    public static LogContext createThreadSafe(){
+        return new LogContext(
+                UUID.randomUUID().toString(),
+                new ConcurrentHashMap<>(),
+                new ConcurrentHashMap<>(),
+                Markers.appendFields(null),
+                Markers.appendFields(null)
+        );
+
+    }
+
+    public static LogContext createEmpty() {
+        return new LogContext();
+    }
+
+
+
     public String getTransactionId() {
         return transactionId;
     }
 
-    public TransactionLoggingContext setTransactionId(String transactionId) {
+    public LogContext setTransactionId(String transactionId) {
         this.transactionId = transactionId;
         return this;
     }
 
-    public Map<String, Object> getTransactionLogMap() {
+    /**
+     * Put to transaction level
+     * @param key
+     * @param v
+     * @return
+     */
+    public Object putT(String key,Object v){
+        return transactionLogMap.put(key,v);
+    }
+
+    /**
+     * put to activity level
+     * @param key
+     * @param v
+     * @return
+     */
+    public Object putA(String key,Object v){
+        return activityLogMap.put(key,v);
+    }
+
+
+    public Map<String, Object> _getTransactionLogMap() {
         return transactionLogMap;
     }
 
-    public void setTransactionLogMap(Map<String, Object> transactionLogMap) {
+    public void _setTransactionLogMap(Map<String, Object> transactionLogMap) {
         this.transactionLogMap = transactionLogMap;
     }
 
-    public Map<String, Object> getActivityLogMap() {
+    public Map<String, Object> _getActivityLogMap() {
         return activityLogMap;
     }
 
-    public void setActivityLogMap(Map<String, Object> activityLogMap) {
+    public void _setActivityLogMap(Map<String, Object> activityLogMap) {
         this.activityLogMap = activityLogMap;
     }
 
 
 
     //beware, marker not merge json element , lead to duplicate element
-    public void appendActivityFields(Object o) {
+    public void appendFieldsA(Object o) {
         activityMarker.add(Markers.appendFields(o));
     }
 
     //beware, marker not merge json element , lead to duplicate element
-    public void appendTransactionFields(Object o) {
+    public void appendFieldsT(Object o) {
         transactionMarker.add(Markers.appendFields(o));
     }
 

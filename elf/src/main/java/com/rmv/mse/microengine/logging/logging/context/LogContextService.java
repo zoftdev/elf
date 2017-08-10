@@ -11,34 +11,34 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by zoftdev on 8/9/2017.
  */
 @Service
-public class TransactionLoggingContextFactory {
+public class LogContextService {
     //Stack Of Transaction
-    Map<Thread ,LinkedList<TransactionLoggingContext>> threadStackTransactionContext=new ConcurrentHashMap<>();
+    Map<Thread ,LinkedList<LogContext>> threadStackTransactionContext=new ConcurrentHashMap<>();
 
 
     //store of child->parent
     Map<Thread,Thread> childParentMap=new ConcurrentHashMap<>();
-    public TransactionLoggingContext addTransactionLoggingContext(TransactionLoggingContext transactionLoggingContext){
+    public LogContext addTransactionLoggingContext(LogContext logContext){
 
-        LinkedList<TransactionLoggingContext> list = threadStackTransactionContext.get(Thread.currentThread());
+        LinkedList<LogContext> list = threadStackTransactionContext.get(Thread.currentThread());
 
         if(list==null){
             list=threadStackTransactionContext.put(Thread.currentThread(),new LinkedList<>());
         }else{
             //set parent tid
-            transactionLoggingContext.setParentTransactionId(list.getLast().getTransactionId());
+            logContext.setParentTransactionId(list.getLast().getTransactionId());
         }
 
 
 
-        threadStackTransactionContext.get(Thread.currentThread()).add(transactionLoggingContext);
-        return transactionLoggingContext;
+        threadStackTransactionContext.get(Thread.currentThread()).add(logContext);
+        return logContext;
     }
 
-    public TransactionLoggingContext remove(TransactionLoggingContext transactionLoggingContext){
+    public LogContext remove(LogContext logContext){
         assert(threadStackTransactionContext.get(Thread.currentThread())!=null);
 
-        TransactionLoggingContext context = threadStackTransactionContext.get(Thread.currentThread()).getLast();
+        LogContext context = threadStackTransactionContext.get(Thread.currentThread()).getLast();
 
         //cleanup child
         for(Thread childThead: context.getChildThread()){
@@ -49,7 +49,7 @@ public class TransactionLoggingContextFactory {
 
     }
 
-    public TransactionLoggingContext getInFightContext() {
+    public LogContext getCurrentContext() {
         if(threadStackTransactionContext.get(Thread.currentThread())!=null) {
             return threadStackTransactionContext.get(Thread.currentThread()).getLast();
         }else if(childParentMap.get(Thread.currentThread())!=null)
@@ -59,16 +59,17 @@ public class TransactionLoggingContextFactory {
         }
     }
 
-    public void joinContext(ContextSignature parent) {
+    public LogContext joinContext(ContextSignature parent) {
         if(threadStackTransactionContext.get(parent.getThread())==null){
             throw new RuntimeException("Transaction not found");
         }
-        TransactionLoggingContext context = threadStackTransactionContext.get(parent.getThread()).getLast();
+        LogContext context = threadStackTransactionContext.get(parent.getThread()).getLast();
         context.getChildThread().add(Thread.currentThread());
         childParentMap.put(Thread.currentThread(),parent.getThread());
+        return context;
     }
 
-    public ContextSignature getInFightContextSignature() {
+    public ContextSignature getCurrentContextSignature() {
         assert(threadStackTransactionContext.get(Thread.currentThread())!=null);
         return new ContextSignature(Thread.currentThread());
     }
@@ -79,7 +80,7 @@ public class TransactionLoggingContextFactory {
     }
 
     public void waitChild(int max_wait_msec) {
-        TransactionLoggingContext inFightContext = getInFightContext();
+        LogContext inFightContext = getCurrentContext();
         for (Thread t:inFightContext.getChildThread()){
             try {
                 t.join(max_wait_msec);

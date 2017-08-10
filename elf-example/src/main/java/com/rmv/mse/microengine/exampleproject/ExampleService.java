@@ -1,13 +1,11 @@
 package com.rmv.mse.microengine.exampleproject;
 
 import com.rmv.mse.microengine.logging.logging.LoggingKey;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContextFactory;
+import com.rmv.mse.microengine.logging.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.logging.annotation.*;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContext;
 import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
-import net.logstash.logback.marker.Markers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +13,7 @@ public class ExampleService {
 
 
     @Autowired
-    TransactionLoggingContextFactory transactionLoggingContextFactory;
+    LogContextService logContextService;
 
 
     /**
@@ -41,8 +39,8 @@ public class ExampleService {
 
     @ActivityLogging
     public ExampleResult appendFieldActivityLevel() {
-        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
-        transactionLoggingContext.appendActivityFields(new ObjectWithField());
+        LogContext logContext = logContextService.getCurrentContext();
+        logContext.appendFieldsA(new ObjectWithField());
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
@@ -53,8 +51,8 @@ public class ExampleService {
      */
     @ActivityLogging(logResponse = false)
     public java.sql.ResultSet doActivityNotLogResponse() {
-        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
-        transactionLoggingContext.appendActivityFields(ActivityResult.SUCCESS);
+        LogContext logContext = logContextService.getCurrentContext();
+        logContext.appendFieldsA(ActivityResult.SUCCESS);
 
         return null;
     }
@@ -65,8 +63,8 @@ public class ExampleService {
      */
     @ActivityLogging
     public ExampleResult appendFieldTranLevel() {
-        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
-        transactionLoggingContext.appendTransactionFields(new ObjectWithField());
+        LogContext logContext = logContextService.getCurrentContext();
+        logContext.appendFieldsT(new ObjectWithField());
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 
@@ -85,11 +83,11 @@ public class ExampleService {
             String password
 
     ) {
-        TransactionLoggingContext transactionLoggingContext = transactionLoggingContextFactory.getInFightContext();
+        LogContext logContext = logContextService.getCurrentContext();
         //transaction level
-        transactionLoggingContext.getTransactionLogMap().put(LoggingKey.IMSI, "5200099998888");
+        logContext.putT(LoggingKey.IMSI, "5200099998888");
         //activity level
-        transactionLoggingContext.getActivityLogMap().put("am_request_id", "22222");
+        logContext.putA("am_request_id", "22222");
 
         //dosomething
 
@@ -119,8 +117,8 @@ public class ExampleService {
 
     @ActivityLogging
     public ExampleResult doSetMessage() {
-        TransactionLoggingContext context = transactionLoggingContextFactory.getInFightContext();
-        context.getActivityLogMap().put(LoggingKey.MESSAGE,"test2");
+        LogContext context = logContextService.getCurrentContext();
+        context.putT(LoggingKey.MESSAGE,"test2");
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
 

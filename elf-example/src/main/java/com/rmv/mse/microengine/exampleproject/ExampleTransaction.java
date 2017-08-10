@@ -3,9 +3,9 @@ package com.rmv.mse.microengine.exampleproject;
 import com.rmv.mse.microengine.logging.logging.context.ContextSignature;
 import com.rmv.mse.microengine.logging.logging.LoggingKey;
 import com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContextFactory;
+import com.rmv.mse.microengine.logging.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
 import com.rmv.mse.microengine.logging.logging.model.TransactionResult;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class ExampleTransaction {
 
 
     @Autowired
-    TransactionLoggingContextFactory transactionLoggingContextFactory;
+    LogContextService logContextService;
 
     /**
      * This example show pattern of return TransactionResult
@@ -42,8 +42,7 @@ public class ExampleTransaction {
 
     @TransactionLogging(logResponse = false)
     public String notLogResponse() {
-        transactionLoggingContextFactory.getInFightContext().appendTransactionFields(TransactionResult.SUCCESS);
-        TransactionResult ret = new TransactionResult();
+        logContextService.getCurrentContext().appendFieldsT(TransactionResult.SUCCESS);
         //do something
         return "test";
     }
@@ -59,7 +58,7 @@ public class ExampleTransaction {
     @TransactionLogging
     public TransactionResult log_id() {
         //Get id
-        String transactionId = transactionLoggingContextFactory.getInFightContext().getTransactionId();
+        String transactionId = logContextService.getCurrentContext().getTransactionId();
         logger.debug("tid:{}",transactionId);
 
         TransactionResult ret = new TransactionResult();
@@ -75,8 +74,8 @@ public class ExampleTransaction {
     @TransactionLogging
     public TransactionResult logging_and_pass_to_activity(
     ) {
-        TransactionLoggingContext context = transactionLoggingContextFactory.getInFightContext();
-        context.getTransactionLogMap().put(LoggingKey.MSISDN,"2222");
+        LogContext context = logContextService.getCurrentContext();
+        context.putT(LoggingKey.MSISDN,"2222");
 
         exampleService.exampleLogging("hlex","java");
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
@@ -85,8 +84,8 @@ public class ExampleTransaction {
     @TransactionLogging
     public TransactionResult deepService(
     ) {
-        TransactionLoggingContext context = transactionLoggingContextFactory.getInFightContext();
-        context.getTransactionLogMap().put(LoggingKey.MSISDN,"2222");
+        LogContext context = logContextService.getCurrentContext();
+        context.putT(LoggingKey.MSISDN,"2222");
         methodA();
 
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
@@ -115,12 +114,12 @@ public class ExampleTransaction {
     @TransactionLogging
     public TransactionResult doThreadService(){
 
-        ContextSignature contextSignature= transactionLoggingContextFactory.getInFightContextSignature();
+        ContextSignature contextSignature= logContextService.getCurrentContextSignature();
 
         Runnable runnable=new Runnable() {
             @Override
             public void run() {
-                transactionLoggingContextFactory.joinContext(contextSignature);
+                logContextService.joinContext(contextSignature);
                 exampleService.exampleLogging("hlex","pass");
             }
         };
@@ -130,7 +129,7 @@ public class ExampleTransaction {
             t.start();
         }
 
-        transactionLoggingContextFactory.waitChild(1000);
+        logContextService.waitChild(1000);
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 

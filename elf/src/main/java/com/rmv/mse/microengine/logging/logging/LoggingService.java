@@ -17,11 +17,11 @@
 package com.rmv.mse.microengine.logging.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContextFactory;
+import com.rmv.mse.microengine.logging.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
 import com.rmv.mse.microengine.logging.logging.model.ClassMetaData;
 import com.rmv.mse.microengine.logging.logging.model.MethodMetaData;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import net.logstash.logback.marker.Markers;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -47,7 +47,7 @@ public class LoggingService {
 
 
 	@Autowired
-    TransactionLoggingContextFactory transactionLoggingContextFactory;
+    LogContextService logContextService;
 
 	String host;
 
@@ -69,7 +69,7 @@ public class LoggingService {
         MethodMetaData methodMetaData = classMetaData.getTransactionMethod().get(methodName);
 
         //create context
-        TransactionLoggingContext context = transactionLoggingContextFactory.addTransactionLoggingContext(TransactionLoggingContext.getDummy());
+        LogContext context = logContextService.addTransactionLoggingContext(LogContext.createBasic());
         Marker marker = context.getTransactionMarker();
         Throwable t=null;
         Object ret=null;
@@ -105,7 +105,7 @@ public class LoggingService {
         marker.add(Markers.append(LoggingKey.TRANSACTIONID,context.getTransactionId()));
 
         //map
-        marker.add(Markers.appendEntries(context.getTransactionLogMap()));
+        marker.add(Markers.appendEntries(context._getTransactionLogMap()));
 
         //parent
         if(context.getParentTransactionId()!=null){
@@ -135,10 +135,10 @@ public class LoggingService {
         classMetaDataCache.initialize(c);
         MethodMetaData methodMetaData = classMetaDataCache.getCachedClass().get(c).getActivtyMethod().get(methodName);
         Method method = methodMetaData.getMethod();
-        TransactionLoggingContext context=transactionLoggingContextFactory.getInFightContext();
+        LogContext context= logContextService.getCurrentContext();
         Marker activityMarker= Markers.appendFields(new Object());
         context.setActivityMarker(activityMarker);
-        context.getActivityLogMap().clear();
+        context._getActivityLogMap().clear();
 
 //        findTransactionLoggingParam(pjp);
 
@@ -169,8 +169,8 @@ public class LoggingService {
 
 		//apply map to marker with priority: retval union marker  union( a map-> t map)
         Map<String,Object> mapToLog=new HashMap<>();
-        mapToLog.putAll(context.getTransactionLogMap());
-        mapToLog.putAll(context.getActivityLogMap());
+        mapToLog.putAll(context._getTransactionLogMap());
+        mapToLog.putAll(context._getActivityLogMap());
         activityMarker.add(Markers.appendEntries(mapToLog));
         activityMarker.add(context.getTransactionMarker());
 

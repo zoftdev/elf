@@ -2,7 +2,7 @@ package com.rmv.mse.microengine.logging;
 
 import com.rmv.mse.microengine.logging.logging.ClassMetaDataCache;
 import com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -52,7 +52,7 @@ public class ClassMetaDataCacheTest {
 
     public class ClassWithParam{
         @ActivityLogging
-        public void pos0(TransactionLoggingContext c){
+        public void pos0(LogContext c){
 
         }
         @ActivityLogging
@@ -67,7 +67,7 @@ public class ClassMetaDataCacheTest {
         }
 
         @ActivityLogging
-        public void pos1(String a,TransactionLoggingContext c){
+        public void pos1(String a,LogContext c){
 
         }
     }

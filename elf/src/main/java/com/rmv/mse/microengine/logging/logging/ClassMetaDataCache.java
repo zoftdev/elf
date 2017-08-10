@@ -2,7 +2,6 @@ package com.rmv.mse.microengine.logging.logging;
 
 import com.rmv.mse.microengine.logging.logging.annotation.ActivityLogging;
 import com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContext;
 import com.rmv.mse.microengine.logging.logging.exception.ActivityLoggingException;
 import com.rmv.mse.microengine.logging.logging.model.ClassMetaData;
 import com.rmv.mse.microengine.logging.logging.model.MethodMetaData;
@@ -24,7 +23,7 @@ public class ClassMetaDataCache {
     /**
      * Cache class verification
      * - method with @ActivityLogging must not overloaded
-     * - V8.8 support TransactionLoggingContext param
+     * - V8.8 support LogContext param
      * @param c
      * @return
      */

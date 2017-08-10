@@ -1,7 +1,7 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContextFactory;
-import com.rmv.mse.microengine.logging.logging.context.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.logging.context.LogContextService;
+import com.rmv.mse.microengine.logging.logging.context.LogContext;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,11 +23,11 @@ public class ExampleServiceTest {
     }
 
     @Autowired
-    TransactionLoggingContextFactory transactionLoggingContextFactory;
+    LogContextService logContextService;
 
     @Before
     public void init(){
-        transactionLoggingContextFactory.addTransactionLoggingContext(TransactionLoggingContext.getDummy());
+        logContextService.addTransactionLoggingContext(LogContext.createBasic());
     }
 
     @Autowired
