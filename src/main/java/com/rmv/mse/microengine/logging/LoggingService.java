@@ -17,10 +17,11 @@
 package com.rmv.mse.microengine.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContextFactory;
 import com.rmv.mse.microengine.logging.model.ActivityLoggingMessage;
 import com.rmv.mse.microengine.logging.model.ActivityResult;
 import com.rmv.mse.microengine.logging.model.MethodMetaData;
-import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
 import net.logstash.logback.marker.Markers;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -31,7 +32,6 @@ import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ import java.util.Map;
 
 @Aspect
 @Component
-public class ActivityLoggingService {
+public class LoggingService {
 	ObjectMapper objectMapper=new ObjectMapper();
 
 	@Value("microengine.logging.servicename")
@@ -58,19 +58,57 @@ public class ActivityLoggingService {
 
     @Around("@annotation(com.rmv.mse.microengine.logging.annotation.TransactionLogging)")
     public Object transactionLogging(ProceedingJoinPoint pjp)throws Throwable{
-        //clean and regist to mdc;
 
+        //func name
+        String funtionName=pjp.getSignature().getName();
+        //create context
+        TransactionLoggingContext context = transactionLoggingContextFactory.addTransactionLoggingContext(TransactionLoggingContext.getDummy());
+        Marker marker = context.getTransactionMarker();
+        Throwable t=null;
         Object ret=null;
+        long begin=System.currentTimeMillis();
+
         try {
              ret = pjp.proceed();
-        } finally {
-
+             //todo ifNotLogresponse
+             marker.add(Markers.appendFields(ret));
+        } catch (Throwable throwable){
+            logger.error("Error in Transaction {}",throwable.getMessage(),throwable);
             logger.info("exit tran logging");
+            t=throwable;
+            marker.add(Markers.appendFields(new ActivityResult(Error.E77000,"SBM","Exception:"+throwable.getMessage())));
+
+        }
+        long processTime=System.currentTimeMillis()-begin;
+
+        //type
+        marker.add(Markers.append(LoggingKey.TYPE,LoggingKey.TRANSACTION));
+        marker.add(Markers.append(LoggingKey.FUNCTION,funtionName));
+
+        //time , begin
+        marker.add(Markers.append(LoggingKey.PROCESS_TIME,processTime));
+        marker.add(Markers.append(LoggingKey.BEGIN,begin));
+
+        //id
+        marker.add(Markers.append(LoggingKey.TRANSACTIONID,context.getTransactionId()));
+
+        //map
+        marker.add(Markers.appendEntries(context.getTransactionLogMap()));
+
+        //parent
+        if(context.getParentTransactionId()!=null){
+            marker.add(Markers.append(LoggingKey.PARTENT_TRANSACTION_ID, context.getParentTransactionId()));
         }
 
 
+        loggerStash.info(marker,"Finish transaction");
 
-        return ret;
+        //result
+        if(t!=null){
+            throw  t;
+        }else {
+            return ret;
+        }
     }
 
 	@Around("@annotation(com.rmv.mse.microengine.logging.annotation.ActivityLogging)")
@@ -87,11 +125,11 @@ public class ActivityLoggingService {
         MethodMetaData methodMetaData = classMetaDataCache.getCachedClass().get(c).getActivtyMethod().get(methodName);
         Method method = methodMetaData.getMethod();
 
-        TransactionLoggingContext transactionLoggingContext=transactionLoggingContextFactory.getInFightContext();
+        TransactionLoggingContext context=transactionLoggingContextFactory.getInFightContext();
         Marker activityMarker= Markers.appendFields(new Object());
 
-        transactionLoggingContext.setActivityMarker(activityMarker);
-        transactionLoggingContext.getActivityLogMap().clear();
+        context.setActivityMarker(activityMarker);
+        context.getActivityLogMap().clear();
 
 //        findTransactionLoggingParam(pjp);
 
@@ -99,11 +137,11 @@ public class ActivityLoggingService {
 		try {
 
                 retVal = pjp.proceed();
-			//no exception
+			//no doException
 
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
-            throwActivityResult=new ActivityResult(Error.E77000,"SBM",methodName+" exception:"+throwable.getMessage());
+            throwActivityResult=new ActivityResult(Error.E77000,"SBM","Exception:"+throwable.getMessage());
             t=throwable;
 	//		throw throwable;
 		}
@@ -118,12 +156,15 @@ public class ActivityLoggingService {
 
 		//apply map to marker with priority: retval union marker  union( a map-> t map)
         Map<String,Object> mapToLog=new HashMap<>();
-        mapToLog.putAll(transactionLoggingContext.getTransactionLogMap());
-        mapToLog.putAll(transactionLoggingContext.getActivityLogMap());
+        mapToLog.putAll(context.getTransactionLogMap());
+        mapToLog.putAll(context.getActivityLogMap());
         activityMarker.add(Markers.appendEntries(mapToLog));
-        activityMarker.add(transactionLoggingContext.getTransactionMarker());
+        activityMarker.add(context.getTransactionMarker());
 
         activityMarker.add(Markers.appendFields(message));
+        activityMarker.add(Markers.append(LoggingKey.TYPE,LoggingKey.ACTIVITY));
+        //id
+        activityMarker.add(Markers.append(LoggingKey.TRANSACTIONID,context.getTransactionId()));;
 
         if(methodMetaData.isLogResponse()){
             activityMarker.add(Markers.appendFields(retVal));

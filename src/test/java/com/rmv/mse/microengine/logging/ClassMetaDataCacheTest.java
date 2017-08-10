@@ -1,7 +1,7 @@
 package com.rmv.mse.microengine.logging;
 
 import com.rmv.mse.microengine.logging.annotation.ActivityLogging;
-import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
 import org.junit.Test;
 
 import java.lang.reflect.Method;

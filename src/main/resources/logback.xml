@@ -21,7 +21,7 @@
                 <pattern>
                     <pattern>
                     {
-                        "appName": "elk-testdata",
+                        "service": "spam_dsd",
                         "appVersion": "1.0"
                         }
                     </pattern>

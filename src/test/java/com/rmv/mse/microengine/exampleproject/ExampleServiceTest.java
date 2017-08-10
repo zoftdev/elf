@@ -1,8 +1,7 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.TransactionLoggingContextFactory;
-import com.rmv.mse.microengine.logging.annotation.TransactionLogging;
-import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContextFactory;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -10,8 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by zoftdev on 8/9/2017.

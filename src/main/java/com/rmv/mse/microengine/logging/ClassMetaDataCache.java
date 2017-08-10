@@ -2,7 +2,7 @@ package com.rmv.mse.microengine.logging;
 
 import com.rmv.mse.microengine.logging.annotation.ActivityLogging;
 import com.rmv.mse.microengine.logging.annotation.NotLogResponse;
-import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
 import com.rmv.mse.microengine.logging.exception.ActivityLoggingException;
 import com.rmv.mse.microengine.logging.model.ClassMetaData;
 import com.rmv.mse.microengine.logging.model.MethodMetaData;

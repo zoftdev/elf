@@ -4,18 +4,11 @@ package com.rmv.mse.microengine.logging.model;
  * Created by zoftdev on 8/8/2017.
  */
 public class TransactionResult {
-    String transactionId; //Automatic fill data
+
     String tranCode;
     String tranDesc;
 
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public TransactionResult setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
-    }
+    public static final TransactionResult SUCCESS=new TransactionResult().setTranCode("0").setTranDesc("success");
 
     public String getTranCode() {
         return tranCode;

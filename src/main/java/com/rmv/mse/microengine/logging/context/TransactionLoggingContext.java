@@ -1,11 +1,10 @@
-package com.rmv.mse.microengine.logging.model;
+package com.rmv.mse.microengine.logging.context;
 
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Marker;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by zoftdev on 8/7/2017.
@@ -17,6 +16,10 @@ public class TransactionLoggingContext {
     Map<String,Object> activityLogMap;
     Marker activityMarker;
     Marker transactionMarker;
+    String parentTransactionId;
+
+    //child
+    Set<Thread> childThread=new ConcurrentHashMap().newKeySet();
 
     private TransactionLoggingContext() {
     }
@@ -91,5 +94,22 @@ public class TransactionLoggingContext {
 
     public void setTransactionMarker(Marker transactionMarker) {
         this.transactionMarker = transactionMarker;
+    }
+
+    //package access
+    Set<Thread> getChildThread() {
+        return childThread;
+    }
+
+    public void setChildThread(Set<Thread> childThread) {
+        this.childThread = childThread;
+    }
+
+    public String getParentTransactionId() {
+        return parentTransactionId;
+    }
+
+    public void setParentTransactionId(String parentTransactionId) {
+        this.parentTransactionId = parentTransactionId;
     }
 }

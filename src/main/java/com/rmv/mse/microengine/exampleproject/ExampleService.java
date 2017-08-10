@@ -1,9 +1,9 @@
 package com.rmv.mse.microengine.exampleproject;
 
 import com.rmv.mse.microengine.logging.LoggingKey;
-import com.rmv.mse.microengine.logging.TransactionLoggingContextFactory;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContextFactory;
 import com.rmv.mse.microengine.logging.annotation.*;
-import com.rmv.mse.microengine.logging.model.TransactionLoggingContext;
+import com.rmv.mse.microengine.logging.context.TransactionLoggingContext;
 import com.rmv.mse.microengine.logging.model.ActivityResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class ExampleService {
 
     @ActivityLogging
     public ExampleResult doException() {
-        throw new RuntimeException("test exception");
+        throw new RuntimeException("test doException");
     }
 
 
@@ -91,6 +91,12 @@ public class ExampleService {
         //return field will logged (exclude by @Nolog : check ExampleResult class)
         return new ExampleResult("0", "SBM", "Success", "3AAAF");
     }
+
+    @ActivityLogging
+    public ActivityResult foo() {
+        return ActivityResult.SUCCESS;
+    }
+
 
     class ObjectWithField {
         int field1 = 5;
