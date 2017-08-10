@@ -56,7 +56,7 @@ public class LoggingService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger loggerStash = LoggerFactory.getLogger("stash");
 
-    //todo method ,processNameOverride
+    //todo message
 
     @Around("@annotation(com.rmv.mse.microengine.logging.logging.annotation.TransactionLogging)")
     public Object transactionLogging(ProceedingJoinPoint pjp)throws Throwable{
@@ -80,8 +80,7 @@ public class LoggingService {
             if(methodMetaData.isLogResponse())
                 marker.add(Markers.appendFields(ret));
         } catch (Throwable throwable){
-            logger.error("Error in Transaction {}",throwable.getMessage(),throwable);
-            logger.info("exit tran logging");
+            logger.error("Error in Process {}",throwable.getMessage(),throwable);
             t=throwable;
             marker.add(Markers.appendFields(new ActivityResult(Error.E77000,"SBM","Exception:"+throwable.getMessage())));
 
@@ -114,7 +113,7 @@ public class LoggingService {
         }
 
 
-        loggerStash.info(marker,"Finish transaction");
+        loggerStash.info(marker,"Process {} Finish in {} ms",processTime);
 
         //result
         if(t!=null){
