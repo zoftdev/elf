@@ -1,0 +1,7 @@
+infra:
+  zone: UAT #UAT TEST PBI MTG
+  tier: receiver
+spring:
+  application:
+    name: example-app
+
