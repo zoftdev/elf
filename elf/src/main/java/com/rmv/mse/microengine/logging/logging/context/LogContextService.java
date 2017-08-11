@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LogContextService {
     //Stack Of Transaction
     Map<Thread ,LinkedList<LogContext>> threadStackTransactionContext=new ConcurrentHashMap<>();
-
+    Map<Thread ,LinkedList<LogActivityContext>> actStackTransactionContext =new ConcurrentHashMap<>();
 
     //store of child->parent
     Map<Thread,Thread> childParentMap=new ConcurrentHashMap<>();
@@ -23,7 +23,7 @@ public class LogContextService {
         LinkedList<LogContext> list = threadStackTransactionContext.get(Thread.currentThread());
 
         if(list==null){
-            list=threadStackTransactionContext.put(Thread.currentThread(),new LinkedList<>());
+            threadStackTransactionContext.put(Thread.currentThread(),new LinkedList<>());
         }else{
             //set parent tid
             logContext.setParentTransactionId(list.getLast().getTransactionId());
@@ -34,6 +34,36 @@ public class LogContextService {
         threadStackTransactionContext.get(Thread.currentThread()).add(logContext);
         return logContext;
     }
+
+    public LogActivityContext addActivityLoggingContext(LogActivityContext activityContext){
+        LinkedList<LogActivityContext> list = actStackTransactionContext.get(Thread.currentThread());
+        if(list==null){
+            list=new LinkedList<>();
+            actStackTransactionContext.put(Thread.currentThread(),list);
+
+        }
+        list.add(activityContext);
+        getCurrentContext().setLogActivityContext(activityContext);
+        return activityContext;
+    }
+
+    //return prior activity context
+    public LogActivityContext removeActivityLoggingContext(){
+        assert(actStackTransactionContext.get(Thread.currentThread())!=null);
+        LinkedList<LogActivityContext> list = actStackTransactionContext.get(Thread.currentThread());
+        list.removeLast();
+        //set current context's acitivity
+        if(list.size()>0){
+            getCurrentContext().setLogActivityContext(list.getLast());
+            return list.getLast();
+        } else{
+            getCurrentContext().setLogActivityContext(null);
+            return null;
+        }
+
+
+    }
+
 
     public LogContext remove(LogContext logContext){
         assert(threadStackTransactionContext.get(Thread.currentThread())!=null);

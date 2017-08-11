@@ -123,6 +123,37 @@ public class ExampleService {
     }
 
 
+    /** ---------------- Start Lowlevel
+     * Stacked Activity support
+     * the map of each will separated
+     */
+    @Autowired  LowLevelService lowLevelService;
+    @ActivityLog
+    public ActivityResult stackActivity(){
+        logContextService.getCurrentContext().putA("from","highlevel");
+        lowLevelService.lowLevelActivity();
+        return ActivityResult.SUCCESS;
+    }
+
+    @Service
+    class LowLevelService{
+
+        @Autowired LogContextService mylogContextService;
+        @ActivityLog
+        public ActivityResult lowLevelActivity(){
+            mylogContextService.getCurrentContext().putA("from","lowlevel");
+            return ActivityResult.SUCCESS;
+        }
+    }
+    /** ---------------- End Lowlevel */
+
+
+    @ActivityLog
+    public ActivityResult forTestThread(){
+        logContextService.getCurrentContext().putA("ThreadNameShouldSeparated",Thread.currentThread().getName());
+        return ActivityResult.SUCCESS;
+    }
+
 }
 
 

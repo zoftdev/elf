@@ -17,6 +17,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class ExampleServiceTest {
     @Test
+    public void stackActivity() throws Exception {
+        service.stackActivity();
+    }
+
+    @Test
     public void doOverrideName() throws Exception {
 
         service.doOverrideName();

@@ -17,6 +17,7 @@
 package com.rmv.mse.microengine.logging.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rmv.mse.microengine.logging.logging.context.LogActivityContext;
 import com.rmv.mse.microengine.logging.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
 import com.rmv.mse.microengine.logging.logging.model.ClassMetaData;
@@ -113,7 +114,7 @@ public class LoggingService {
         }
 
 
-        loggerStash.info(marker,"Process {} Finish in {} ms",processTime);
+        loggerStash.info(marker,"Process {} Finish in {} ms",processName,processTime);
 
         //result
         if(t!=null){
@@ -136,9 +137,8 @@ public class LoggingService {
         MethodMetaData methodMetaData = classMetaDataCache.getCachedClass().get(c).getActivtyMethod().get(methodName);
         Method method = methodMetaData.getMethod();
         LogContext context= logContextService.getCurrentContext();
-        Marker activityMarker= Markers.appendFields(new Object());
-        context.setActivityMarker(activityMarker);
-        context._getActivityLogMap().clear();
+        LogActivityContext logActivityContext = logContextService.addActivityLoggingContext(LogActivityContext.createBasic());
+        Marker activityMarker=logActivityContext.getActivityMarker();
 
 //        findTransactionLoggingParam(pjp);
 
@@ -170,7 +170,7 @@ public class LoggingService {
 		//apply map to marker with priority: retval union marker  union( a map-> t map)
         Map<String,Object> mapToLog=new HashMap<>();
         mapToLog.putAll(context._getTransactionLogMap());
-        mapToLog.putAll(context._getActivityLogMap());
+        mapToLog.putAll(context.getLogActivityContext().getActivityLogMap());
         activityMarker.add(Markers.appendEntries(mapToLog));
         activityMarker.add(context.getTransactionMarker());
 
@@ -202,7 +202,7 @@ public class LoggingService {
             //Message
             loggerStash.info(activityMarker, "Process {} for {} ms", activityName, diff);
 
-
+            logContextService.removeActivityLoggingContext();
             activityMarker=null;
             mapToLog=null;
             return retVal;

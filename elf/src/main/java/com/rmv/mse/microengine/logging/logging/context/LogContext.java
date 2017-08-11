@@ -12,52 +12,37 @@ import java.util.concurrent.ConcurrentHashMap;
 //todo revise method
 public class LogContext {
     String transactionId;
-    Map<String,Object> transactionLogMap;
-    Map<String,Object> activityLogMap;
-    Marker activityMarker;
+    Map<String, Object> transactionLogMap;
     Marker transactionMarker;
     String parentTransactionId;
 
     //child
-    Set<Thread> childThread=new ConcurrentHashMap().newKeySet();
+    Set<Thread> childThread = new ConcurrentHashMap().newKeySet();
+    private LogActivityContext logActivityContext;
 
     private LogContext() {
     }
 
-    public LogContext(String transactionId, Map<String, Object> transactionLogMap, Map<String, Object> activityLogMap, Marker activityMarker, Marker transactionMarker) {
+    public LogContext(String transactionId, Map<String, Object> transactionLogMap) {
         this.transactionId = transactionId;
         this.transactionLogMap = transactionLogMap;
-        this.activityLogMap = activityLogMap;
-        this.activityMarker = activityMarker;
-        this.transactionMarker = transactionMarker;
+        transactionMarker = Markers.appendFields(null);
     }
 
-    public static LogContext createBasic(){
+    public static LogContext createBasic() {
         return new LogContext(
                 UUID.randomUUID().toString(),
-                new HashMap<>(),
-                new HashMap<>(),
-                Markers.appendFields(null),
-                Markers.appendFields(null)
-                );
+                new ConcurrentHashMap<>()
 
-    }
 
-    public static LogContext createThreadSafe(){
-        return new LogContext(
-                UUID.randomUUID().toString(),
-                new ConcurrentHashMap<>(),
-                new ConcurrentHashMap<>(),
-                Markers.appendFields(null),
-                Markers.appendFields(null)
         );
 
     }
 
+
     public static LogContext createEmpty() {
         return new LogContext();
     }
-
 
 
     public String getTransactionId() {
@@ -71,22 +56,24 @@ public class LogContext {
 
     /**
      * Put to transaction level
+     *
      * @param key
      * @param v
      * @return
      */
-    public Object putT(String key,Object v){
-        return transactionLogMap.put(key,v);
+    public Object putT(String key, Object v) {
+        return transactionLogMap.put(key, v);
     }
 
     /**
      * put to activity level
+     *
      * @param key
      * @param v
      * @return
      */
-    public Object putA(String key,Object v){
-        return activityLogMap.put(key,v);
+    public Object putA(String key, Object v) {
+        return logActivityContext.getActivityLogMap().put(key, v);
     }
 
 
@@ -98,19 +85,10 @@ public class LogContext {
         this.transactionLogMap = transactionLogMap;
     }
 
-    public Map<String, Object> _getActivityLogMap() {
-        return activityLogMap;
-    }
-
-    public void _setActivityLogMap(Map<String, Object> activityLogMap) {
-        this.activityLogMap = activityLogMap;
-    }
-
-
 
     //beware, marker not merge json element , lead to duplicate element
     public void appendFieldsA(Object o) {
-        activityMarker.add(Markers.appendFields(o));
+        getLogActivityContext().getActivityMarker().add(Markers.appendFields(o));
     }
 
     //beware, marker not merge json element , lead to duplicate element
@@ -118,13 +96,6 @@ public class LogContext {
         transactionMarker.add(Markers.appendFields(o));
     }
 
-    public Marker getActivityMarker() {
-        return activityMarker;
-    }
-
-    public void setActivityMarker(Marker activityMarker) {
-        this.activityMarker = activityMarker;
-    }
 
     public Marker getTransactionMarker() {
         return transactionMarker;
@@ -139,7 +110,7 @@ public class LogContext {
         return childThread;
     }
 
-    public void setChildThread(Set<Thread> childThread) {
+    void setChildThread(Set<Thread> childThread) {
         this.childThread = childThread;
     }
 
@@ -147,9 +118,16 @@ public class LogContext {
         return parentTransactionId;
     }
 
-    public void setParentTransactionId(String parentTransactionId) {
+    void setParentTransactionId(String parentTransactionId) {
         this.parentTransactionId = parentTransactionId;
     }
 
 
+    public void setLogActivityContext(LogActivityContext logActivityContext) {
+        this.logActivityContext = logActivityContext;
+    }
+
+    public LogActivityContext getLogActivityContext() {
+        return logActivityContext;
+    }
 }
