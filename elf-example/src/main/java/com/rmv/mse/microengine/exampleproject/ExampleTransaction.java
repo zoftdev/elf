@@ -31,10 +31,8 @@ public class ExampleTransaction {
      */
     @TransactionLog
     public TransactionResult example_hello_world() {
-
-        TransactionResult ret = new TransactionResult();
         //do something
-        return ret.setTranCode("0").setTranDesc("Success");
+        return TransactionResult.SUCCESS;
     }
 
     @TransactionLog(logResponse = false)
