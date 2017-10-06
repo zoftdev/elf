@@ -5,6 +5,7 @@
     <springProperty scope="context" name="zone" source="infra.zone" />
     <springProperty scope="context" name="bootstrap-servers" source="spring.kafka.bootstrap-servers" />
 
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
     <appender name="stash-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
@@ -55,7 +56,7 @@
 
     <logger name="stash">
         <appender-ref ref="stash-file" />
-        <appender-ref ref="async-kafkaAppender" />
+        <appender-ref ref="kafkaAppender" />
     </logger>
 
     <logger name="org.apache.kafka" level="debug" />
