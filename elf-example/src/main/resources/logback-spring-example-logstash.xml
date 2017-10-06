@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="service" source="spring.application.name" />
+    <springProperty scope="context" name="tier" source="infra.tier" />
+    <springProperty scope="context" name="zone" source="infra.zone" />
+
+    <appender name="stash-tcp" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>10.95.108.188:4560</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+    <appender name="stash-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>info</level>-->
+        <!--</filter>-->
+        <file>/tmp/elf-servicename.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/tmp/elf-servicename.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%contextName: %d{HH:mm:ss.SSS} [%thread] %level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+
+    <logger name="stash">
+        <appender-ref ref="stash-file" />
+        <appender-ref ref="async-kafkaAppender" />
+    </logger>
+
+    <logger name="org.apache.kafka" level="debug" />
+
+
+</configuration>

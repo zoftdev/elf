@@ -1,5 +1,7 @@
 package com.rmv.mse.microengine.exampleproject;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +16,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class ExampleTransactionTest {
     @Autowired ExampleTransaction exampleTransaction;
+
+    @AfterClass
+    public static void waitKafka(){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void notLogResponse() throws Exception {

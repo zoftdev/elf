@@ -1,10 +1,8 @@
-package com.rmv.mse.microengine.exampleproject;
+package com.rmv.mse.microengine;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.rmv.mse.microengine")

@@ -51,7 +51,33 @@
 			<artifactId>elf</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.danielwegener</groupId>
+			<artifactId>logback-kafka-appender</artifactId>
+			<version>0.1.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!--logback-kafka-appender depends on org.apache.kafka:kafka-clients:0.9.0.0:jar.
+		It can append logs to a kafka broker with version 0.9.0.0 or higher.-->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.10.1.1</version>
+		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>ch.qos.logback</groupId>-->
+			<!--<artifactId>logback-classic</artifactId>-->
+			<!--<version>1.1.2</version>-->
+			<!--<scope>runtime</scope>-->
+		<!--</dependency>-->
+
+
+
 	</dependencies>
+
+
 
 	<build>
 		<plugins>
