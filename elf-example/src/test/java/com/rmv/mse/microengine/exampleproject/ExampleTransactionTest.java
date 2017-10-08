@@ -17,14 +17,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ExampleTransactionTest {
     @Autowired ExampleTransaction exampleTransaction;
 
-//    @AfterClass
-//    public static void waitKafka(){
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @AfterClass
+    public static void waitKafka(){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void notLogResponse() throws Exception {
@@ -57,7 +57,7 @@ public class ExampleTransactionTest {
         exampleTransaction.deepService();
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void exception() throws Exception {
         exampleTransaction.doException();

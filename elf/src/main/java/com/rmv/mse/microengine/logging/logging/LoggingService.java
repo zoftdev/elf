@@ -114,7 +114,7 @@ public class LoggingService {
         }
 
 
-        loggerStash.info(marker,"Process {} Finish in {} ms",processName,processTime);
+        loggerStash.info(marker,"Function {} processed for {} ms",processName,processTime);
 
         //result
         if(t!=null){
@@ -178,6 +178,8 @@ public class LoggingService {
         activityMarker.add(Markers.append(LoggingKey.TYPE,LoggingKey.ACTIVITY));
         //id
         activityMarker.add(Markers.append(LoggingKey.TRANSACTIONID,context.getTransactionId()));;
+        activityMarker.add(Markers.append(LoggingKey.ACTIVITY_ID,logActivityContext.getActivityId()));;
+
         activityMarker.add(Markers.append(LoggingKey.PROCESS_TIME,diff));
         activityMarker.add(Markers.append(LoggingKey.BEGIN,begin));
         activityMarker.add(Markers.append(LoggingKey.ACTIVITY,activityName));
@@ -200,7 +202,7 @@ public class LoggingService {
                 activityMarker.add(Markers.appendFields(retVal));
             }
             //Message
-            loggerStash.info(activityMarker, "Process {} for {} ms", activityName, diff);
+            loggerStash.info(activityMarker, "Activity {} processed for {} ms", activityName, diff);
 
             logContextService.removeActivityLoggingContext();
             activityMarker=null;

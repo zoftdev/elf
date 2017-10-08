@@ -1,6 +1,6 @@
 infra:
-  zone: UAT #UAT TEST PBI MTG
-  tier: receiver
+  zone: UAT #UAT TEST PBI MTG DEV
+  service_name: UGW
 spring:
   application:
     name: example-app
