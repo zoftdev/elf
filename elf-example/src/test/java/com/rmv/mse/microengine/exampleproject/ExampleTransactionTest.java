@@ -15,6 +15,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ExampleTransactionTest {
+    @Test
+    public void testReturnMap() throws Exception {
+        exampleTransaction.testReturnMap();
+    }
+
     @Autowired ExampleTransaction exampleTransaction;
 
     @AfterClass

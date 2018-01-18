@@ -43,7 +43,7 @@ public class ExampleServiceTest {
 
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void doException() throws Exception {
         service.doException();
