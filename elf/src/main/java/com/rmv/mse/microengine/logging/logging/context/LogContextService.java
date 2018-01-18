@@ -1,6 +1,8 @@
 package com.rmv.mse.microengine.logging.logging.context;
 
 import com.rmv.mse.microengine.logging.logging.exception.ActivityLoggingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
@@ -12,6 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class LogContextService {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    public LogContextService() {
+        logger.warn("LogContextService v1.3.1");
+    }
+
     //Stack Of Transaction
     Map<Thread ,LinkedList<LogContext>> threadStackTransactionContext=new ConcurrentHashMap<>();
     Map<Thread ,LinkedList<LogActivityContext>> actStackTransactionContext =new ConcurrentHashMap<>();
@@ -75,7 +82,12 @@ public class LogContextService {
             childThead.interrupt();
             childParentMap.remove(childThead);
         }
-        return threadStackTransactionContext.get(Thread.currentThread()).removeLast();
+        LogContext removedLogContext = threadStackTransactionContext.get(Thread.currentThread()).removeLast();
+        assert (removedLogContext==logContext);
+        if( threadStackTransactionContext.get(Thread.currentThread()).size()==0){
+            threadStackTransactionContext.remove(Thread.currentThread());
+        }
+        return removedLogContext;
 
     }
 
