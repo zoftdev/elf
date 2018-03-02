@@ -1,8 +1,8 @@
 package com.rmv.mse.microengine.logging;
 
-import com.rmv.mse.microengine.logging.logging.ClassMetaDataCache;
-import com.rmv.mse.microengine.logging.logging.annotation.ActivityLog;
-import com.rmv.mse.microengine.logging.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.ClassMetaDataCache;
+import com.rmv.mse.microengine.logging.annotation.ActivityLog;
+import com.rmv.mse.microengine.logging.context.LogContext;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
