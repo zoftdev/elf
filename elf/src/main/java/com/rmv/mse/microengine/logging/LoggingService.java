@@ -163,8 +163,8 @@ public class LoggingService {
 
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
-                throwActivityResult = new ActivityResult(Error.E77000, "SBM", "Exception:"+t.getClass().getSimpleName()+"Message:" + throwable.getMessage());
-                ExceptionInfo exceptionInfo=new ExceptionInfo(t);
+                throwActivityResult = new ActivityResult(Error.E77000, "SBM", "Exception:"+throwable.getClass().getSimpleName()+"Message:" + throwable.getMessage());
+                ExceptionInfo exceptionInfo=new ExceptionInfo(throwable);
                 context.appendFieldsOnlyT(exceptionInfo);
                 context.appendFieldsA(exceptionInfo);
                 t = throwable;
