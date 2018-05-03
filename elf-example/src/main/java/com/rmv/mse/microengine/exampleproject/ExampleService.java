@@ -1,10 +1,10 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.prop.LoggingKey;
-import com.rmv.mse.microengine.logging.logging.context.LogContext;
-import com.rmv.mse.microengine.logging.logging.context.LogContextService;
-import com.rmv.mse.microengine.logging.logging.annotation.*;
-import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
+import com.rmv.mse.microengine.logging.prop.LoggingKey;
+import com.rmv.mse.microengine.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.context.LogContextService;
+import com.rmv.mse.microengine.logging.annotation.*;
+import com.rmv.mse.microengine.logging.model.ActivityResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

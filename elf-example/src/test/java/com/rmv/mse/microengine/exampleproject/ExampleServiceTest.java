@@ -1,13 +1,18 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.context.LogContextService;
-import com.rmv.mse.microengine.logging.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.context.LogContextService;
+import com.rmv.mse.microengine.logging.context.LogContext;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -16,10 +21,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ExampleServiceTest {
+
     @Test
     public void stackActivity() throws Exception {
         service.stackActivity();
     }
+
 
     @Test
     public void doOverrideName() throws Exception {
@@ -43,8 +50,7 @@ public class ExampleServiceTest {
 
     }
 
-//    @Ignore
-    @Test
+    @Test(expected = RuntimeException.class)
     public void doException() throws Exception {
         service.doException();
     }

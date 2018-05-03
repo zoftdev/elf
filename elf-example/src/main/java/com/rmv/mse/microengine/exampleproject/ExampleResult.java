@@ -1,7 +1,7 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.annotation.NoLog;
-import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
+import com.rmv.mse.microengine.logging.annotation.NoLog;
+import com.rmv.mse.microengine.logging.model.ActivityResult;
 
 public class ExampleResult extends ActivityResult {
     private String messageid;

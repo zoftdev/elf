@@ -63,14 +63,14 @@ public class ExampleTransactionTest {
     }
 
 //    @Ignore
-    @Test
+    @Test(expected = RuntimeException.class)
     public void exception() throws Exception {
         exampleTransaction.doException();
 
     }
 
-    @Ignore
-    @Test
+   // @Ignore
+    @Test(expected = RuntimeException.class)
     public void doExceptionFromService() throws Exception {
         exampleTransaction.doExceptionFromService();
     }

@@ -1,13 +1,13 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.annotation.ActivityLog;
-import com.rmv.mse.microengine.logging.logging.context.ContextSignature;
-import com.rmv.mse.microengine.logging.logging.prop.LoggingKey;
-import com.rmv.mse.microengine.logging.logging.context.LogContextService;
-import com.rmv.mse.microengine.logging.logging.annotation.TransactionLog;
-import com.rmv.mse.microengine.logging.logging.context.LogContext;
-import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
-import com.rmv.mse.microengine.logging.logging.model.TransactionResult;
+import com.rmv.mse.microengine.logging.annotation.ActivityLog;
+import com.rmv.mse.microengine.logging.context.ContextSignature;
+import com.rmv.mse.microengine.logging.prop.LoggingKey;
+import com.rmv.mse.microengine.logging.context.LogContextService;
+import com.rmv.mse.microengine.logging.annotation.TransactionLog;
+import com.rmv.mse.microengine.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.model.ActivityResult;
+import com.rmv.mse.microengine.logging.model.TransactionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
