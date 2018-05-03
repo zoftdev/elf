@@ -104,7 +104,7 @@
         <appender-ref ref="async-kafkaAppender-activity" />
     </logger>
 
-    <logger name="org.apache.kafka" level="debug" />
+    <logger name="org.apache.kafka" level="info" />
 
 
 </configuration>

@@ -1,6 +1,7 @@
 package com.rmv.mse.microengine.logging.context;
 
 import com.rmv.mse.microengine.logging.exception.ActivityLoggingException;
+import com.rmv.mse.microengine.logging.exception.NoTransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -97,7 +98,7 @@ public class LogContextService {
         }else if(childParentMap.get(Thread.currentThread())!=null)
             return threadStackTransactionContext.get( childParentMap.get(Thread.currentThread()) ).getLast();
         else{
-            throw new RuntimeException("no logging context");
+            throw new NoTransactionException("no logging context");
         }
     }
 

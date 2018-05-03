@@ -6,10 +6,10 @@
 
     <groupId>com.rmv.mse.microengine.logging</groupId>
     <artifactId>elf</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
     <name>ELK Logging Framework</name>
 <description>
-
+        1.4 fix nullpointer exception, split activity log to other topic
         1.3 fix memory leak
         1.2 support transaction response as map
         1.1 check file
