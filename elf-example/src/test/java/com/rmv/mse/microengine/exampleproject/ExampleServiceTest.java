@@ -44,7 +44,7 @@ public class ExampleServiceTest {
     }
 
 //    @Ignore
-    @Test
+    @Test(expected = RuntimeException.class)
     public void doException() throws Exception {
         service.doException();
     }
