@@ -71,56 +71,63 @@ public class LoggingService {
 
         //create context
         LogContext context = logContextService.addTransactionLoggingContext(LogContext.createBasic());
-        Marker marker = context.getTransactionMarker();
-        Throwable t=null;
-        Object ret=null;
-        long begin=System.currentTimeMillis();
-
         try {
-             ret = pjp.proceed();
-            if(methodMetaData.isLogResponse())
-                marker.add(Markers.appendFields(ret));
-        } catch (Throwable throwable){
-            logger.error("Error in Process {}",throwable.getMessage(),throwable);
-            t=throwable;
-            marker.add(Markers.appendFields(new ActivityResult(Error.E77000,"SBM","Exception:"+throwable.getMessage())));
+            Marker marker = context.getTransactionMarker();
+            Throwable t = null;
+            Object ret = null;
+            long begin = System.currentTimeMillis();
 
-        }
-        long processTime=System.currentTimeMillis()-begin;
+            try {
+                ret = pjp.proceed();
+                if (methodMetaData.isLogResponse())
+                    if (ret instanceof Map) {
+                        marker.add(Markers.appendEntries((Map<?, ?>) ret));
+                    } else
+                        marker.add(Markers.appendFields(ret));
+            } catch (Throwable throwable) {
+                logger.error("Error in Process {}", throwable.getMessage(), throwable);
+                t = throwable;
+                marker.add(Markers.appendFields(new ActivityResult(Error.E77000, "SBM", "Exception:" + throwable.getMessage())));
 
-        //type
-        marker.add(Markers.append(LoggingKey.TYPE,LoggingKey.TRANSACTION));
+            }
+            long processTime = System.currentTimeMillis() - begin;
 
-        //process name
-        String processName=methodName;
-        if(methodMetaData.isOverrideName()){
-            processName=methodMetaData.getOverrideName();
-        }
-        marker.add(Markers.append(LoggingKey.PROCESS,processName));
+            //type
+            marker.add(Markers.append(LoggingKey.TYPE, LoggingKey.TRANSACTION));
 
-        //time , begin
-        marker.add(Markers.append(LoggingKey.PROCESS_TIME,processTime));
-        marker.add(Markers.append(LoggingKey.BEGIN,begin));
+            //process name
+            String processName = methodName;
+            if (methodMetaData.isOverrideName()) {
+                processName = methodMetaData.getOverrideName();
+            }
+            marker.add(Markers.append(LoggingKey.PROCESS, processName));
 
-        //id
-        marker.add(Markers.append(LoggingKey.TRANSACTIONID,context.getTransactionId()));
+            //time , begin
+            marker.add(Markers.append(LoggingKey.PROCESS_TIME, processTime));
+            marker.add(Markers.append(LoggingKey.BEGIN, begin));
 
-        //map
-        marker.add(Markers.appendEntries(context._getTransactionLogMap()));
+            //id
+            marker.add(Markers.append(LoggingKey.TRANSACTIONID, context.getTransactionId()));
 
-        //parent
-        if(context.getParentTransactionId()!=null){
-            marker.add(Markers.append(LoggingKey.PARTENT_TRANSACTION_ID, context.getParentTransactionId()));
-        }
+            //map
+            marker.add(Markers.appendEntries(context._getTransactionLogMap()));
+
+            //parent
+            if (context.getParentTransactionId() != null) {
+                marker.add(Markers.append(LoggingKey.PARTENT_TRANSACTION_ID, context.getParentTransactionId()));
+            }
 
 
-        loggerStash.info(marker,"Process {} Finish in {} ms",processName,processTime);
+            loggerStash.info(marker, "Function {} processed for {} ms", processName, processTime);
 
-        //result
-        if(t!=null){
-            throw  t;
-        }else {
-            return ret;
+            //result
+            if (t != null) {
+                throw t;
+            } else {
+                return ret;
+            }
+        } finally {
+            logContextService.remove(context);
         }
     }
 
@@ -138,74 +145,77 @@ public class LoggingService {
         Method method = methodMetaData.getMethod();
         LogContext context= logContextService.getCurrentContext();
         LogActivityContext logActivityContext = logContextService.addActivityLoggingContext(LogActivityContext.createBasic());
-        Marker activityMarker=logActivityContext.getActivityMarker();
+        try {
+            Marker activityMarker = logActivityContext.getActivityMarker();
 
-//        findTransactionLoggingParam(pjp);
+            //        findTransactionLoggingParam(pjp);
 
-        long begin =System.currentTimeMillis();
-		try {
+            long begin = System.currentTimeMillis();
+            try {
 
                 retVal = pjp.proceed();
-			//no doException
+                //no doException
 
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-            throwActivityResult=new ActivityResult(Error.E77000,"SBM","Exception:"+throwable.getMessage());
-            t=throwable;
-	//		throw throwable;
-		}
-		// stop stopwatch
-		long end=System.currentTimeMillis();
-		long diff=end-begin;
-
-
-
-		String activityName=methodName;
-		if(methodMetaData.isOverrideName()) {
-            activityName = methodMetaData.getOverrideName();
-        }
-
-
-
-		//apply map to marker with priority: retval union marker  union( a map-> t map)
-        Map<String,Object> mapToLog=new HashMap<>();
-        mapToLog.putAll(context._getTransactionLogMap());
-        mapToLog.putAll(context.getLogActivityContext().getActivityLogMap());
-        activityMarker.add(Markers.appendEntries(mapToLog));
-        activityMarker.add(context.getTransactionMarker());
-
-
-        activityMarker.add(Markers.append(LoggingKey.TYPE,LoggingKey.ACTIVITY));
-        //id
-        activityMarker.add(Markers.append(LoggingKey.TRANSACTIONID,context.getTransactionId()));;
-        activityMarker.add(Markers.append(LoggingKey.PROCESS_TIME,diff));
-        activityMarker.add(Markers.append(LoggingKey.BEGIN,begin));
-        activityMarker.add(Markers.append(LoggingKey.ACTIVITY,activityName));
-
-        //method
-        activityMarker.add(Markers.append(LoggingKey.METHOD,method.getDeclaringClass().getCanonicalName()+"."+method.getName()));
-
-
-
-
-        if(t !=null){
-            activityMarker.add(Markers.appendFields(throwActivityResult));
-            loggerStash.error(activityMarker,"Exception in {} for {} ms with exception: {}",activityName,diff,throwActivityResult);
-            activityMarker=null;
-            mapToLog=null;
-            throw  t;
-        }
-        else{
-            if(methodMetaData.isLogResponse()){
-                activityMarker.add(Markers.appendFields(retVal));
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+                throwActivityResult = new ActivityResult(Error.E77000, "SBM", "Exception:" + throwable.getMessage());
+                t = throwable;
+                //		throw throwable;
             }
-            //Message
-            loggerStash.info(activityMarker, "Process {} for {} ms", activityName, diff);
+            // stop stopwatch
+            long end = System.currentTimeMillis();
+            long diff = end - begin;
 
+
+            String activityName = methodName;
+            if (methodMetaData.isOverrideName()) {
+                activityName = methodMetaData.getOverrideName();
+            }
+
+
+            //apply map to marker with priority: retval union marker  union( a map-> t map)
+            Map<String, Object> mapToLog = new HashMap<>();
+            mapToLog.putAll(context._getTransactionLogMap());
+            mapToLog.putAll(context.getLogActivityContext().getActivityLogMap());
+            activityMarker.add(Markers.appendEntries(mapToLog));
+            activityMarker.add(context.getTransactionMarker());
+
+
+            activityMarker.add(Markers.append(LoggingKey.TYPE, LoggingKey.ACTIVITY));
+            //id
+            activityMarker.add(Markers.append(LoggingKey.TRANSACTIONID, context.getTransactionId()));
+            ;
+            activityMarker.add(Markers.append(LoggingKey.ACTIVITY_ID, logActivityContext.getActivityId()));
+            ;
+
+            activityMarker.add(Markers.append(LoggingKey.PROCESS_TIME, diff));
+            activityMarker.add(Markers.append(LoggingKey.BEGIN, begin));
+            activityMarker.add(Markers.append(LoggingKey.ACTIVITY, activityName));
+
+            //method
+            activityMarker.add(Markers.append(LoggingKey.METHOD, method.getDeclaringClass().getCanonicalName() + "." + method.getName()));
+
+
+            if (t != null) {
+                activityMarker.add(Markers.appendFields(throwActivityResult));
+                loggerStash.error(activityMarker, "Exception in {} for {} ms with exception: {}", activityName, diff, throwActivityResult);
+                activityMarker = null;
+                mapToLog = null;
+                throw t;
+            } else {
+                if (methodMetaData.isLogResponse()) {
+                    activityMarker.add(Markers.appendFields(retVal));
+                }
+                //Message
+                loggerStash.info(activityMarker, "Activity {} processed for {} ms", activityName, diff);
+
+
+                activityMarker = null;
+                mapToLog = null;
+                return retVal;
+            }
+        }finally {
             logContextService.removeActivityLoggingContext();
-            activityMarker=null;
-            mapToLog=null;
-            return retVal;
         }
 	}
 

@@ -10,6 +10,10 @@
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
+    <appender name="null" class="ch.qos.logback.core.helpers.NOPAppender">
+
+    </appender>
+
     <appender name="stash-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
         <file>/tmp/elf-servicename.log</file>
@@ -50,16 +54,17 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="null"/>
     </root>
 
     <logger name="test-stash">
         <appender-ref ref="async-kafkaAppender" />
     </logger>
 
-    <logger name="stash">
-        <appender-ref ref="stash-file" />
-        <appender-ref ref="kafkaAppender" />
+    <logger  name="stash" >
+        <appender-ref ref="stash-file"  />
+        <!-- for offline test -->
+        <!--<appender-ref ref="kafkaAppender" />-->
     </logger>
 
     <logger name="org.apache.kafka" level="debug" />

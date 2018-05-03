@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by zoftdev on 8/8/2017.
  */
@@ -88,6 +91,10 @@ public class ExampleTransaction {
 
     private void methodA() {
         methodB();
+        methodB();
+        methodB();
+
+
     }
 
     private void methodB() {
@@ -105,6 +112,16 @@ public class ExampleTransaction {
         exampleService.doException();
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
+
+
+
+    @TransactionLog
+    public Map testReturnMap(){
+           Map<String,Object> m=new HashMap<>();
+           m.put("a",1);
+        return m;
+    }
+
 
     @TransactionLog
     public TransactionResult doThreadService(){
@@ -140,7 +157,6 @@ public class ExampleTransaction {
         someClass.subFunction();
         return TransactionResult.SUCCESS;
     }
-
     @Autowired SomeClass someClass;
 
     @Service
