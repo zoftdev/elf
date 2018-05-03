@@ -206,7 +206,7 @@ public class LoggingService {
 
             if (t != null) {
                 activityMarker.add(Markers.appendFields(throwActivityResult));
-                loggerStash.error(activityMarker, "Exception in {} for {} ms with exception: {}", activityName, diff, throwActivityResult);
+                loggerStashActivity.error(activityMarker, "Exception in {} for {} ms with exception: {}", activityName, diff, throwActivityResult);
                 activityMarker = null;
                 mapToLog = null;
                 throw t;
