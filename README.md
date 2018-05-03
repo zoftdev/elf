@@ -18,6 +18,10 @@ V1.0
 - support message setting
 - add method field
 
+V1.4
+- Split activity to separate kafka topic
+- Some Fix bug
+
 example project:
 - add logstash tcp
 
