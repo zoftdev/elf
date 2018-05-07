@@ -130,6 +130,8 @@ public class LoggingService {
             //host
             marker.add(Markers.append(LoggingKey.HOSTNAME, host));
 
+            //version
+            marker.add(Markers.append(LoggingKey.ELFVERSION_KEY, LoggingKey.ELFVERSION_VALUE));
 
             loggerStash.info(marker, "Function {} processed for {} ms", processName, processTime);
 
@@ -210,6 +212,10 @@ public class LoggingService {
 
             //host
             activityMarker.add(Markers.append(LoggingKey.HOSTNAME, host));
+
+            //version
+            activityMarker.add(Markers.append(LoggingKey.ELFVERSION_KEY, LoggingKey.ELFVERSION_VALUE));
+
 
             //method
             activityMarker.add(Markers.append(LoggingKey.METHOD, method.getDeclaringClass().getCanonicalName() + "." + method.getName()));

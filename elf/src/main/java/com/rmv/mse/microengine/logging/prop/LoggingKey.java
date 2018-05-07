@@ -26,4 +26,6 @@ public class LoggingKey {
     public static final String EXCEPTIONMESSAGE = "exception_message";
     public static final String STRACKTRACE = "stracktrace";
     public static final String HOSTNAME = "hostname";
+    public static final String ELFVERSION_KEY ="elf_version" ;
+    public static final Object ELFVERSION_VALUE = "1.4";
 }
