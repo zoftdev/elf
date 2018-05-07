@@ -55,11 +55,16 @@ public class LoggingService {
 
 	String host;
 
-	ClassMetaDataCache classMetaDataCache =new ClassMetaDataCache();
+    public LoggingService() {
+        host=networkUtil.getHostByName();
+    }
+
+    ClassMetaDataCache classMetaDataCache =new ClassMetaDataCache();
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger loggerStash = LoggerFactory.getLogger("stash");
     private final Logger loggerStashActivity = LoggerFactory.getLogger("stash-activity");
+    private NetworkUtil networkUtil=new NetworkUtil();
 
     @Around("@annotation(com.rmv.mse.microengine.logging.annotation.TransactionLog)")
     public Object transactionLogging(ProceedingJoinPoint pjp)throws Throwable{
@@ -121,6 +126,9 @@ public class LoggingService {
             if (context.getParentTransactionId() != null) {
                 marker.add(Markers.append(LoggingKey.PARTENT_TRANSACTION_ID, context.getParentTransactionId()));
             }
+
+            //host
+            marker.add(Markers.append(LoggingKey.HOSTNAME, host));
 
 
             loggerStash.info(marker, "Function {} processed for {} ms", processName, processTime);
@@ -192,13 +200,16 @@ public class LoggingService {
             activityMarker.add(Markers.append(LoggingKey.TYPE, LoggingKey.ACTIVITY));
             //id
             activityMarker.add(Markers.append(LoggingKey.TRANSACTIONID, context.getTransactionId()));
-            ;
+
             activityMarker.add(Markers.append(LoggingKey.ACTIVITY_ID, logActivityContext.getActivityId()));
-            ;
+
 
             activityMarker.add(Markers.append(LoggingKey.PROCESS_TIME, diff));
             activityMarker.add(Markers.append(LoggingKey.BEGIN, begin));
             activityMarker.add(Markers.append(LoggingKey.ACTIVITY, activityName));
+
+            //host
+            activityMarker.add(Markers.append(LoggingKey.HOSTNAME, host));
 
             //method
             activityMarker.add(Markers.append(LoggingKey.METHOD, method.getDeclaringClass().getCanonicalName() + "." + method.getName()));

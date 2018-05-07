@@ -25,4 +25,5 @@ public class LoggingKey {
     public static final String EXCEPTIONCLASS = "exception_class";
     public static final String EXCEPTIONMESSAGE = "exception_message";
     public static final String STRACKTRACE = "stracktrace";
+    public static final String HOSTNAME = "hostname";
 }
