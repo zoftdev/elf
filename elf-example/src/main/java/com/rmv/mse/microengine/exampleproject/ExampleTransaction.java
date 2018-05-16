@@ -29,6 +29,8 @@ public class ExampleTransaction {
     @Autowired
     LogContextService logContextService;
 
+    @Autowired ExampleTransaction self;
+
     /**
      * This example show pattern of return TransactionResult
      */
@@ -87,6 +89,23 @@ public class ExampleTransaction {
         methodA();
 
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
+    }
+
+    @TransactionLog
+    public TransactionResult nestedTransaction(
+    ) {
+        LogContext context = logContextService.getCurrentContext();
+        context.putT("from parent","2222");
+        self.childNested();
+
+        return new TransactionResult().setTranCode("0").setTranDesc("Success");
+    }
+
+    @TransactionLog
+    public TransactionResult childNested(){
+        LogContext context = logContextService.getCurrentContext();
+        context.putT("from child","1111");
+        return new TransactionResult("3","Success");
     }
 
     private void methodA() {

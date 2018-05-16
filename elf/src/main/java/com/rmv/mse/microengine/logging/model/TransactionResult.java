@@ -8,6 +8,14 @@ public class TransactionResult {
     String tranCode;
     String tranDesc;
 
+    public TransactionResult() {
+    }
+
+    public TransactionResult(String tranCode, String tranDesc) {
+        this.tranCode = tranCode;
+        this.tranDesc = tranDesc;
+    }
+
     public static final TransactionResult SUCCESS=new TransactionResult().setTranCode("0").setTranDesc("success");
 
     public String getTranCode() {

@@ -85,4 +85,10 @@ public class ExampleTransactionTest {
         exampleTransaction.doOverlapFunction();
     }
 
+
+    @Test
+    public void testNested() throws Exception {
+        exampleTransaction.nestedTransaction();
+    }
+
 }
