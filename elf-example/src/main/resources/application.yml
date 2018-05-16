@@ -1,6 +1,6 @@
 elf:
   zone: UAT #UAT TEST PBI MTG DEV
-  service_name: UGW
+  service_name: TESTELF
   application_name: example-app
   kafka:
     bootstrap-servers: 10.95.108.214:9092
