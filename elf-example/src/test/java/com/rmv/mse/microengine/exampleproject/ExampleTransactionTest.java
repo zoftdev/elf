@@ -104,4 +104,9 @@ public class ExampleTransactionTest {
         exampleTransaction.nestedTransaction();
     }
 
+    @Test
+    public void testNoLog(){
+        exampleTransaction.noLog();
+    }
+
 }

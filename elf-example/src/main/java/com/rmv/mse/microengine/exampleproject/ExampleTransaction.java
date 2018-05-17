@@ -3,6 +3,7 @@ package com.rmv.mse.microengine.exampleproject;
 import com.rmv.mse.microengine.logging.annotation.ActivityLog;
 import com.rmv.mse.microengine.logging.context.ContextSignature;
 import com.rmv.mse.microengine.logging.model.ElfException;
+import com.rmv.mse.microengine.logging.model.TransactionResultNoLog;
 import com.rmv.mse.microengine.logging.prop.LoggingKey;
 import com.rmv.mse.microengine.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.annotation.TransactionLog;
@@ -147,6 +148,9 @@ public class ExampleTransaction {
 
 
 
+
+
+
     @TransactionLog
     public Map testReturnMap(){
            Map<String,Object> m=new HashMap<>();
@@ -204,6 +208,13 @@ public class ExampleTransaction {
         public ActivityResult someActivity(){
             return ActivityResult.SUCCESS;
         }
+
+    }
+
+    @TransactionLog
+    public TransactionResult noLog(){
+        logContextService.getCurrentContext().putT("shuld not show","---");
+        return new TransactionResultNoLog("0","Success");
 
     }
 

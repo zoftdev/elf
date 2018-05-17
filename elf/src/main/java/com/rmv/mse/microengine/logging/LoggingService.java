@@ -83,6 +83,7 @@ public class LoggingService {
 
             try {
                 ret = pjp.proceed();
+                if(ret instanceof NoLogInterface) return ret;
                 if (methodMetaData.isLogResponse())
                     if (ret instanceof Map) {
                         marker.add(Markers.appendEntries((Map<?, ?>) ret));
@@ -174,6 +175,7 @@ public class LoggingService {
             try {
 
                 retVal = pjp.proceed();
+                if(retVal instanceof NoLogInterface) return retVal;
                 //no doException
             }catch (ElfException elfExcepion){
                 elfExcepion.printStackTrace();
