@@ -33,3 +33,6 @@ V1.4
 
 ### todo:
 - support @LogParam
+
+###help
+-  throw elfException (1.4.1) [howto](http://git.true.th/MSE-DevX/elk-logging-framwork/commit/ebc8036529dc36895dc93e91d87d67530e5346a0#diff-1)
