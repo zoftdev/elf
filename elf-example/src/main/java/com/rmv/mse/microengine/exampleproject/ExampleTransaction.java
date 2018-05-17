@@ -2,6 +2,7 @@ package com.rmv.mse.microengine.exampleproject;
 
 import com.rmv.mse.microengine.logging.annotation.ActivityLog;
 import com.rmv.mse.microengine.logging.context.ContextSignature;
+import com.rmv.mse.microengine.logging.model.ElfException;
 import com.rmv.mse.microengine.logging.prop.LoggingKey;
 import com.rmv.mse.microengine.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.annotation.TransactionLog;
@@ -126,9 +127,21 @@ public class ExampleTransaction {
         throw new RuntimeException("test");
     }
 
+
+    @TransactionLog
+    public TransactionResult doElfException(){
+        throw new ElfException("33","fail");
+    }
+
     @TransactionLog
     public TransactionResult doExceptionFromService(){
         exampleService.doException();
+        return new TransactionResult().setTranCode("0").setTranDesc("Success");
+    }
+
+    @TransactionLog
+    public TransactionResult doElfExceptionFromService(){
+        exampleService.doElfException();
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 

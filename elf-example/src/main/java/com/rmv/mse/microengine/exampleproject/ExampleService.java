@@ -1,5 +1,6 @@
 package com.rmv.mse.microengine.exampleproject;
 
+import com.rmv.mse.microengine.logging.model.ElfException;
 import com.rmv.mse.microengine.logging.prop.LoggingKey;
 import com.rmv.mse.microengine.logging.context.LogContext;
 import com.rmv.mse.microengine.logging.context.LogContextService;
@@ -35,6 +36,12 @@ public class ExampleService {
     public ExampleResult doException() {
         throw new RuntimeException("test doException");
     }
+
+    @ActivityLog
+    public ExampleResult doElfException() {
+        throw new ElfException("33","test elf Exception");
+    }
+
 
 
     @ActivityLog

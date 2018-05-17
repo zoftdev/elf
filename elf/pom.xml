@@ -6,9 +6,10 @@
 
     <groupId>com.rmv.mse.microengine.logging</groupId>
     <artifactId>elf</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
     <name>ELK Logging Framework</name>
 <description>
+        1.4.1 - support TransactionException throwing
         1.4 - fix nullpointer exception ,
             - split activity log to other topic,
             - add hostname field

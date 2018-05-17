@@ -1,5 +1,5 @@
 elf:
-  zone: UAT #UAT TEST PBI MTG DEV
+  zone: DEV #UAT TEST PBI MTG DEV
   service_name: TESTELF
   application_name: example-app
   kafka:

@@ -19,10 +19,7 @@ package com.rmv.mse.microengine.logging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rmv.mse.microengine.logging.context.LogActivityContext;
 import com.rmv.mse.microengine.logging.context.LogContextService;
-import com.rmv.mse.microengine.logging.model.ActivityResult;
-import com.rmv.mse.microengine.logging.model.ClassMetaData;
-import com.rmv.mse.microengine.logging.model.ExceptionInfo;
-import com.rmv.mse.microengine.logging.model.MethodMetaData;
+import com.rmv.mse.microengine.logging.model.*;
 import com.rmv.mse.microengine.logging.context.LogContext;
 import com.rmv.mse.microengine.logging.prop.Error;
 import com.rmv.mse.microengine.logging.prop.LoggingKey;
@@ -94,7 +91,7 @@ public class LoggingService {
             } catch (Throwable throwable) {
                 logger.error("Error in Process {}", throwable.getMessage(), throwable);
                 t = throwable;
-                marker.add(Markers.appendFields(new ActivityResult(Error.E77000, "SBM", "Exception:" + throwable.getMessage())));
+                marker.add(Markers.appendFields(appendExceptionField(t)));
 
             }
             long processTime = System.currentTimeMillis() - begin;
@@ -146,6 +143,14 @@ public class LoggingService {
         }
     }
 
+    private Object appendExceptionField(Throwable t) {
+        if(t instanceof  ElfException){
+            ElfException e = (ElfException) t;
+            return new TransactionExceptionResult(e.getCode(),e.getDesc(),t);
+        }else
+            return  new TransactionExceptionResult(Error.E77000,   "Exception:" + t.getMessage(),t);
+    }
+
     //todo overlap service
 	@Around("@annotation(com.rmv.mse.microengine.logging.annotation.ActivityLog)")
 	public Object activityLogging(ProceedingJoinPoint pjp) throws Throwable {
@@ -170,6 +175,13 @@ public class LoggingService {
 
                 retVal = pjp.proceed();
                 //no doException
+            }catch (ElfException elfExcepion){
+                elfExcepion.printStackTrace();
+                throwActivityResult = new ActivityResult(elfExcepion.getCode(), "SBM", elfExcepion.getDesc());
+                ExceptionInfo exceptionInfo=new ExceptionInfo(elfExcepion);
+//                context.appendFieldsOnlyT(exceptionInfo);
+                context.appendFieldsA(exceptionInfo);
+                t = elfExcepion;
 
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
