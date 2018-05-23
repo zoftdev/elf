@@ -7,9 +7,11 @@ public class ElfException extends RuntimeException {
     Throwable t;
 
     public ElfException(String code, String desc, Throwable t) {
+        super(t);
         this.code = code;
         this.desc = desc;
         this.t = t;
+
     }
 
     public ElfException(String code, String desc) {
