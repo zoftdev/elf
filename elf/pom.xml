@@ -4,7 +4,7 @@
 
     <groupId>com.rmv.mse.microengine.logging</groupId>
     <artifactId>elf</artifactId>
-    <version>1.4.6</version>
+    <version>1.4.7-SNAPSHOT</version>
     <name>ELK Logging Framework</name>
 <description>
         1.4.1 - support TransactionException throwing
@@ -68,7 +68,7 @@
     <scm>
         <connection>scm:git:http://git.true.th/MSE-DevX/elk-logging-framwork.git</connection>
         <developerConnection>scm:git:http://git.true.th/MSE-DevX/elk-logging-framwork.git</developerConnection>
-      <tag>elf-1.4.6</tag>
+      <tag>HEAD</tag>
   </scm>
 
 
