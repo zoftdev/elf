@@ -7,6 +7,7 @@ public class TransactionResult {
 
     String tranCode;
     String tranDesc;
+    String namespace="SBM";
 
     public TransactionResult() {
     }
@@ -36,4 +37,11 @@ public class TransactionResult {
         return this;
     }
 
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
 }
