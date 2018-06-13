@@ -74,22 +74,34 @@
 
 
     <build>
+
+        <!--https://stackoverflow.com/questions/4251488/maven-release-plugin-fails-source-artifacts-getting-deployed-twice-->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <!-- This id must match the -Prelease-profile id value or else sources will be "uploaded" twice, which causes Nexus to fail -->
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <includePom>true</includePom>
+                        <forceCreation>true</forceCreation>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<configuration>
-					<includePom>true</includePom>
-					<forceCreation>true</forceCreation>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>install</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
             <plugin>
