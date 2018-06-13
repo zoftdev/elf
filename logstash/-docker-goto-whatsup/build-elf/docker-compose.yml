@@ -1,0 +1,13 @@
+version: '3'
+services:
+  elf:
+    image: docker01.dc2.true.th:5000/elf:1.0
+    ports:
+     - "9600:9600"
+    environment: 
+     bootstrap_servers: "172.19.103.111:9092"
+     es_host: "172.19.103.114:9200"
+     XPACK_MONITORING_ENABLED: false
+     elf_topic: elf-UAT
+     elf_topic2: elf-DEV
+     LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
