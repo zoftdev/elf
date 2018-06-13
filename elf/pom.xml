@@ -62,6 +62,10 @@
             <url>http://sourceserver:8081/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+    <scm>
+        <connection>scm:git:http://git.true.th/MSE-DevX/elk-logging-framwork.git</connection>
+        <developerConnection>scm:git:http://git.true.th/MSE-DevX/elk-logging-framwork.git</developerConnection>
+    </scm>
     <build>
 		<plugins>
 			<plugin>
