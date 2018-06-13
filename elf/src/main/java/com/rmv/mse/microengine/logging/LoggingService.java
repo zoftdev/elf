@@ -80,7 +80,7 @@ public class LoggingService {
             Throwable t = null;
             Object ret = null;
             long begin = System.currentTimeMillis();
-
+//            logger.trace("{} begin {}",context.getTransactionId(),System.currentTimeMillis());
             try {
                 ret = pjp.proceed();
                 if(ret instanceof NoLogInterface) return ret;
@@ -95,7 +95,9 @@ public class LoggingService {
                 marker.add(Markers.appendFields(appendExceptionField(t)));
 
             }
-            long processTime = System.currentTimeMillis() - begin;
+            long endl=System.currentTimeMillis();
+//            logger.trace("{} end {} ",context.getTransactionId(),endl);
+            long processTime = endl - begin;
 
             //add Transaction Only marker
             marker.add(context.getTransactionOnlyMarker());
@@ -131,7 +133,9 @@ public class LoggingService {
             //version
             marker.add(Markers.append(LoggingKey.ELFVERSION_KEY, LoggingKey.ELFVERSION_VALUE));
 
+
             loggerStash.info(marker, "Function {} processed for {} ms", processName, processTime);
+
 
             //result
             if (t != null) {
