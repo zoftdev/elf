@@ -2,6 +2,7 @@ package com.rmv.mse.microengine.logging.context;
 
 import com.rmv.mse.microengine.logging.exception.ActivityLoggingException;
 import com.rmv.mse.microengine.logging.exception.NoTransactionException;
+import com.rmv.mse.microengine.logging.prop.LoggingKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LogContextService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public LogContextService() {
-        logger.warn("LogContextService v1.3.1");
+        logger.warn("LogContextService ",LoggingKey.ELFVERSION_VALUE);
     }
 
     //Stack Of Transaction
