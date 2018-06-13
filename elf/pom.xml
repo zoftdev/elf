@@ -4,7 +4,7 @@
 
     <groupId>com.rmv.mse.microengine.logging</groupId>
     <artifactId>elf</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.4-SNAPSHOT</version>
     <name>ELK Logging Framework</name>
 <description>
         1.4.1 - support TransactionException throwing
@@ -65,7 +65,14 @@
         <developerConnection>scm:git:http://git.true.th/MSE-DevX/elk-logging-framwork.git</developerConnection>
       <tag>HEAD</tag>
   </scm>
+
+
+
     <build>
+
+
+
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -83,6 +90,18 @@
 					</execution>
 				</executions>
 			</plugin>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.4.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.9.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 		</plugins>
 	</build>
 </project>
