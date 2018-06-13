@@ -7,7 +7,7 @@ public class ElfException extends RuntimeException {
     Throwable t;
 
     public ElfException(String code, String desc, Throwable t) {
-        super(t);
+        super(code+":"+desc+":"+t.getMessage(),t);
         this.code = code;
         this.desc = desc;
         this.t = t;
@@ -15,6 +15,8 @@ public class ElfException extends RuntimeException {
     }
 
     public ElfException(String code, String desc) {
+
+        super(code+":"+desc);
         this.code = code;
         this.desc = desc;
     }
