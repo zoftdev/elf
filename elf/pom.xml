@@ -59,6 +59,11 @@
             <name>snapshots</name>
             <url>http://sourceserver:8081/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>releases</id>
+            <name>releases</name>
+            <url>http://sourceserver:8081/nexus/content/repositories/releases</url>
+        </repository>
     </distributionManagement>
     <scm>
         <connection>scm:git:http://git.true.th/MSE-DevX/elk-logging-framwork.git</connection>
@@ -69,10 +74,6 @@
 
 
     <build>
-
-
-
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
