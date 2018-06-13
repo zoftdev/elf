@@ -1,0 +1,42 @@
+version: "3"
+services:
+  pbi:
+    image: mtg8-registry-01.true.th:5000/elf:1.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 1024M
+    environment: 
+      bootstrap_servers: "pbi-pp-csd-kk-01:9092,pbi-pp-csd-kk-02:9092,pbi-pp-csd-kk-03:9092"
+      es_host: "10.81.5.228:9200"
+      elf_topic: "elf-preprov-PBI"
+      elf_topic2: "elf-preprov-activity-PBI"
+      XPACK_MONITORING_ENABLED: "false"
+      LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
+    extra_hosts:
+      - pbi-pp-csd-kk-01:10.81.37.160
+      - pbi-pp-csd-kk-02:10.81.37.161
+      - pbi-pp-csd-kk-03:10.81.37.162
+
+
+  mtg:
+    image: mtg8-registry-01.true.th:5000/elf:1.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 1024M
+    environment: 
+      bootstrap_servers: "mtg1-pp-csd-kk-01:9092,mtg1-pp-csd-kk-02:9092,mtg1-pp-csd-kk-03:9092"
+      es_host: "10.81.5.228:9200"
+      elf_topic: "elf-preprov-MTG"
+      elf_topic2: "elf-preprov-activity-MTG"
+      XPACK_MONITORING_ENABLED: "false"
+      LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
+    extra_hosts:
+      - mtg1-pp-csd-kk-01:10.81.5.160
+      - mtg1-pp-csd-kk-02:10.81.5.161
+      - mtg1-pp-csd-kk-03:10.81.5.162

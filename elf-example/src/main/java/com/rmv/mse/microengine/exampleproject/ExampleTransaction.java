@@ -1,13 +1,15 @@
 package com.rmv.mse.microengine.exampleproject;
 
-import com.rmv.mse.microengine.logging.logging.annotation.ActivityLog;
-import com.rmv.mse.microengine.logging.logging.context.ContextSignature;
-import com.rmv.mse.microengine.logging.logging.prop.LoggingKey;
-import com.rmv.mse.microengine.logging.logging.context.LogContextService;
-import com.rmv.mse.microengine.logging.logging.annotation.TransactionLog;
-import com.rmv.mse.microengine.logging.logging.context.LogContext;
-import com.rmv.mse.microengine.logging.logging.model.ActivityResult;
-import com.rmv.mse.microengine.logging.logging.model.TransactionResult;
+import com.rmv.mse.microengine.logging.annotation.ActivityLog;
+import com.rmv.mse.microengine.logging.context.ContextSignature;
+import com.rmv.mse.microengine.logging.model.ElfException;
+import com.rmv.mse.microengine.logging.model.TransactionResultNoLog;
+import com.rmv.mse.microengine.logging.prop.LoggingKey;
+import com.rmv.mse.microengine.logging.context.LogContextService;
+import com.rmv.mse.microengine.logging.annotation.TransactionLog;
+import com.rmv.mse.microengine.logging.context.LogContext;
+import com.rmv.mse.microengine.logging.model.ActivityResult;
+import com.rmv.mse.microengine.logging.model.TransactionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ public class ExampleTransaction {
 
     @Autowired
     LogContextService logContextService;
+
+    @Autowired ExampleTransaction self;
 
     /**
      * This example show pattern of return TransactionResult
@@ -89,6 +93,23 @@ public class ExampleTransaction {
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
 
+    @TransactionLog
+    public TransactionResult nestedTransaction(
+    ) {
+        LogContext context = logContextService.getCurrentContext();
+        context.putT("from parent","2222");
+        self.childNested();
+
+        return new TransactionResult().setTranCode("0").setTranDesc("Success");
+    }
+
+    @TransactionLog
+    public TransactionResult childNested(){
+        LogContext context = logContextService.getCurrentContext();
+        context.putT("from child","1111");
+        return new TransactionResult("3","Success");
+    }
+
     private void methodA() {
         methodB();
         methodB();
@@ -107,11 +128,26 @@ public class ExampleTransaction {
         throw new RuntimeException("test");
     }
 
+
+    @TransactionLog
+    public TransactionResult doElfException(){
+        throw new ElfException("33","fail");
+    }
+
     @TransactionLog
     public TransactionResult doExceptionFromService(){
         exampleService.doException();
         return new TransactionResult().setTranCode("0").setTranDesc("Success");
     }
+
+    @TransactionLog
+    public TransactionResult doElfExceptionFromService(){
+        exampleService.doElfException();
+        return new TransactionResult().setTranCode("0").setTranDesc("Success");
+    }
+
+
+
 
 
 
@@ -172,6 +208,13 @@ public class ExampleTransaction {
         public ActivityResult someActivity(){
             return ActivityResult.SUCCESS;
         }
+
+    }
+
+    @TransactionLog
+    public TransactionResult noLog(){
+        logContextService.getCurrentContext().putT("shuld not show","---");
+        return new TransactionResultNoLog("0","Success");
 
     }
 

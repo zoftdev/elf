@@ -1,9 +1,6 @@
-infra:
-  zone: UAT #UAT TEST PBI MTG DEV
-  service_name: UGW
-spring:
-  application:
-    name: example-app
+elf:
+  zone: DEV #UAT TEST PBI MTG DEV
+  service_name: TESTELF
+  application_name: example-app
   kafka:
     bootstrap-servers: 10.95.108.214:9092
-

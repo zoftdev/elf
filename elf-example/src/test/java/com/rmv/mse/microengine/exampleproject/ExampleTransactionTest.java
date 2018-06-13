@@ -1,5 +1,6 @@
 package com.rmv.mse.microengine.exampleproject;
 
+import com.rmv.mse.microengine.logging.model.ElfException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Ignore;
@@ -62,18 +63,30 @@ public class ExampleTransactionTest {
         exampleTransaction.deepService();
     }
 
-//    @Ignore
-    @Test
+
+    @Test(expected = RuntimeException.class)
     public void exception() throws Exception {
         exampleTransaction.doException();
 
     }
 
-    @Ignore
-    @Test
+    @Test(expected = ElfException.class)
+    public void elfException() throws Exception {
+        exampleTransaction.doElfException();
+
+    }
+
+
+    @Test(expected = RuntimeException.class)
     public void doExceptionFromService() throws Exception {
         exampleTransaction.doExceptionFromService();
     }
+
+    @Test(expected = ElfException.class)
+    public void doElfExceptionFromService() throws Exception {
+        exampleTransaction.doElfExceptionFromService();
+    }
+
 
     @Test
     public void doThreadService() throws Exception {
@@ -83,6 +96,17 @@ public class ExampleTransactionTest {
     @Test
     public void doOverlapFunction(){
         exampleTransaction.doOverlapFunction();
+    }
+
+
+    @Test
+    public void testNested() throws Exception {
+        exampleTransaction.nestedTransaction();
+    }
+
+    @Test
+    public void testNoLog(){
+        exampleTransaction.noLog();
     }
 
 }

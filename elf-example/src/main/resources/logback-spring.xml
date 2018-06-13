@@ -3,10 +3,10 @@
     <!--
     for 1 application /service-->
     <!--<springProperty scope="context" name="service" source="spring.application.name" />-->
-    <springProperty scope="context" name="service" source="infra.service_name" />
-    <springProperty scope="context" name="app" source="spring.application.name" />
-    <springProperty scope="context" name="zone" source="infra.zone" />
-    <springProperty scope="context" name="bootstrap-servers" source="spring.kafka.bootstrap-servers" />
+    <springProperty scope="context" name="service" source="elf.service_name" />
+    <springProperty scope="context" name="app" source="elf.application_name" />
+    <springProperty scope="context" name="zone" source="elf.zone" />
+    <springProperty scope="context" name="bootstrap-servers" source="elf.kafka.bootstrap-servers" />
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
@@ -19,9 +19,20 @@
         </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
+
+    <appender name="stash-file-activity" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/tmp/elf-activity-servicename.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/tmp/elf-activity-servicename.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%contextName: %d{HH:mm:ss.SSS} [%thread] %level %logger - %msg%n</pattern>
+            <pattern>%contextName: %d{HH:mm:ss.SSS}  %level %logger - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -31,7 +42,6 @@
         <encoder class="com.github.danielwegener.logback.kafka.encoding.PatternLayoutKafkaMessageEncoder">
             <layout class="net.logstash.logback.layout.LogstashLayout" />
         </encoder>
-
 
         <topic>elf-${zone}</topic>
         <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.RoundRobinKeyingStrategy" />
@@ -45,9 +55,35 @@
         <appender-ref ref="STDOUT" />
     </appender>
 
+
+    <appender name="kafkaAppender-activity" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+        <!-- This is the default encoder that encodes every log message to an utf8-encoded string  -->
+        <encoder class="com.github.danielwegener.logback.kafka.encoding.PatternLayoutKafkaMessageEncoder">
+            <layout class="net.logstash.logback.layout.LogstashLayout" />
+        </encoder>
+
+        <topic>elf-activity-${zone}</topic>
+        <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.RoundRobinKeyingStrategy" />
+        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy" />
+
+
+        <producerConfig>bootstrap.servers=${bootstrap-servers}</producerConfig>
+        <producerConfig>block.on.buffer.full=false</producerConfig>
+
+        <!-- this is the fallback appender if kafka is not available. -->
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+
+
     <appender name="async-kafkaAppender" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="kafkaAppender" />
     </appender>
+
+    <appender name="async-kafkaAppender-activity" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="kafkaAppender-activity" />
+    </appender>
+
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
@@ -57,12 +93,18 @@
         <appender-ref ref="async-kafkaAppender" />
     </logger>
 
+
     <logger name="stash">
         <appender-ref ref="stash-file" />
-        <appender-ref ref="kafkaAppender" />
+        <appender-ref ref="async-kafkaAppender" />
     </logger>
 
-    <logger name="org.apache.kafka" level="debug" />
+    <logger name="stash-activity">
+        <appender-ref ref="stash-file-activity" />
+        <appender-ref ref="async-kafkaAppender-activity" />
+    </logger>
+
+    <logger name="org.apache.kafka" level="info" />
 
 
 </configuration>
