@@ -27,7 +27,11 @@ V1.4
 
 V1.4.8
 - Support ELF_HOSTNAME environment parameter 
-
+- set in docker compose: 
+    ELF_HOSTNAME: '{{.Node.Hostname}}'
+- set in docker run:
+     docker run  -e ELF_HOSTNAME=`hostname`
+     
 example project:
 - add logstash tcp
 
