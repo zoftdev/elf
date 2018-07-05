@@ -17,6 +17,7 @@
 package com.rmv.mse.microengine.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rmv.mse.microengine.ELFConst;
 import com.rmv.mse.microengine.logging.context.LogActivityContext;
 import com.rmv.mse.microengine.logging.context.LogContextService;
 import com.rmv.mse.microengine.logging.model.*;
@@ -41,7 +42,8 @@ import java.util.Map;
 @Aspect
 @Component
 public class LoggingService {
-	ObjectMapper objectMapper=new ObjectMapper();
+
+    ObjectMapper objectMapper=new ObjectMapper();
 
 	@Value("microengine.logging.servicename")
 	String servicename;
@@ -53,7 +55,14 @@ public class LoggingService {
 	String host;
 
     public LoggingService() {
-        host=networkUtil.getHostByName();
+        host=getHostName();
+    }
+
+    protected String getHostName() {
+        if(System.getenv(ELFConst.HOSTNAME_ENV)!=null){
+            return System.getenv(ELFConst.HOSTNAME_ENV);
+        }
+        return networkUtil.getHostByName();
     }
 
     ClassMetaDataCache classMetaDataCache =new ClassMetaDataCache();

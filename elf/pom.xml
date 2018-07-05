@@ -4,9 +4,10 @@
 
     <groupId>com.rmv.mse.microengine.logging</groupId>
     <artifactId>elf</artifactId>
-    <version>1.4.7-SNAPSHOT</version>
+    <version>1.4.8-SNAPSHOT</version>
     <name>ELK Logging Framework</name>
 <description>
+        1.4.8 support override hostname by env param: ELF_HOSTNAME
         1.4.1 - support TransactionException throwing
         1.4 - fix nullpointer exception ,
             - split activity log to other topic,
@@ -50,6 +51,15 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.18.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
     <distributionManagement>

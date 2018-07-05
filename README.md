@@ -25,6 +25,9 @@ V1.4
  - config: http://git.true.th/MSE-DevX/elk-logging-framwork/blob/v14/elf-example/src/main/resources/logback-spring.xml
 - Some Fix bug
 
+V1.4.8
+- Support ELF_HOSTNAME environment parameter 
+
 example project:
 - add logstash tcp
 
