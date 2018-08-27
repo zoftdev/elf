@@ -41,7 +41,8 @@ public class TransactionResult {
         return namespace;
     }
 
-    public void setNamespace(String namespace) {
+    public TransactionResult setNamespace(String namespace) {
         this.namespace = namespace;
+        return this;
     }
 }
