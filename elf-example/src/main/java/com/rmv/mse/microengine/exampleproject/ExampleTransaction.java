@@ -107,6 +107,8 @@ public class ExampleTransaction {
     public TransactionResult childNested(){
         LogContext context = logContextService.getCurrentContext();
         context.putT("from child","1111");
+        context.putT("get pid from child",context.getParentTransactionId());
+        logger.info("get pid from child:"+context.getParentTransactionId());
         return new TransactionResult("3","Success");
     }
 
