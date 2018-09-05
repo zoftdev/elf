@@ -36,7 +36,8 @@ example project:
 - add logstash tcp
 
  
-
+V1.4.11
+- ActivityLoggingHelper.writeActivity()
 
 ## How to use:
 - see [ExampleTransaction](http://git.true.th/MSE-DevX/elk-logging-framwork/blob/4850ba5c74d0c7d33dc108d02db538aef990985d/elf-example/src/main/java/com/rmv/mse/microengine/exampleproject/ExampleTransaction.java)
