@@ -21,6 +21,8 @@ public class LogContext {
     //child
     Set<Thread> childThread = new ConcurrentHashMap().newKeySet();
     private LogActivityContext logActivityContext;
+    private String overrideActivityName;
+    private long overrideBegin;
 
     private LogContext() {
 
@@ -143,5 +145,21 @@ public class LogContext {
 
     public Marker getTransactionOnlyMarker() {
         return transactionOnlyMarker;
+    }
+
+    public void setOverrideActivityName(String overrideActivityName) {
+        this.overrideActivityName = overrideActivityName;
+    }
+
+    public String getOverrideActivityName() {
+        return overrideActivityName;
+    }
+
+    public void setOverrideBegin(long overrideBegin) {
+        this.overrideBegin = overrideBegin;
+    }
+
+    public long getOverrideBegin() {
+        return overrideBegin;
     }
 }

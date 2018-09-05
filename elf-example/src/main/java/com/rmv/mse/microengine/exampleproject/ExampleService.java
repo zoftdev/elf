@@ -1,6 +1,9 @@
 package com.rmv.mse.microengine.exampleproject;
 
+import com.rmv.mse.microengine.logging.ActivityLoggingHelper;
+import com.rmv.mse.microengine.logging.model.ActivitySlimContext;
 import com.rmv.mse.microengine.logging.model.ElfException;
+import com.rmv.mse.microengine.logging.model.TransactionResult;
 import com.rmv.mse.microengine.logging.prop.LoggingKey;
 import com.rmv.mse.microengine.logging.context.LogContext;
 import com.rmv.mse.microengine.logging.context.LogContextService;
@@ -9,9 +12,14 @@ import com.rmv.mse.microengine.logging.model.ActivityResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class ExampleService {
 
+    @Autowired
+    ActivityLoggingHelper activityLoggingHelper;
 
     @Autowired
     LogContextService logContextService;
@@ -159,6 +167,50 @@ public class ExampleService {
     public ActivityResult forTestThread(){
         logContextService.getCurrentContext().putA("ThreadNameShouldSeparated",Thread.currentThread().getName());
         return ActivityResult.SUCCESS;
+    }
+
+    public void  doSingle(){
+        ActivitySlimContext activitySlimContext=new ActivitySlimContext("myActivity");
+        activitySlimContext.appendFieldsA(new TransactionResult("0","desc"));
+        activitySlimContext.appendFieldsA(  new ObjectA(5),new ObjectB(10));
+        activitySlimContext.putA("test","ja");
+        activityLoggingHelper.writeActivity(activitySlimContext);
+    }
+    public void  doSingleWithFullConstructor(){
+        Map<String,Object> m=new HashMap<>();
+        m.put("haha",0);
+        ActivitySlimContext activitySlimContext=new ActivitySlimContext("myActivity",m,
+                new TransactionResult("0","desc"),
+                new ObjectA(5),
+                new ObjectB(10)
+        );
+        activityLoggingHelper.writeActivity(activitySlimContext);
+    }
+
+
+    public static class ObjectA{
+        private int i;
+
+        public int getI() {
+            return i;
+        }
+
+        public ObjectA(int i) {
+            this.i = i;
+        }
+    }
+
+
+    public static class ObjectB{
+        private int j;
+
+        public int getJ() {
+            return j;
+        }
+
+        public ObjectB(int j) {
+            this.j = j;
+        }
     }
 
 }

@@ -209,11 +209,19 @@ public class LoggingService {
             }
             // stop stopwatch
             long end = System.currentTimeMillis();
+
+            //support orverride begin
+            if(context.getOverrideBegin()!=0){
+                begin=context.getOverrideBegin();
+            }
             long diff = end - begin;
 
 
             String activityName = methodName;
-            if (methodMetaData.isOverrideName()) {
+            if(context.getOverrideActivityName()!=null){
+                activityName=context.getOverrideActivityName();
+            }
+            else if (methodMetaData.isOverrideName()) {
                 activityName = methodMetaData.getOverrideName();
             }
 

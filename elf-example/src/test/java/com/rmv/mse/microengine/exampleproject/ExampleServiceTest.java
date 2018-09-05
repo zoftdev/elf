@@ -77,9 +77,18 @@ public class ExampleServiceTest {
         service.doActivityLogResult();
     }
 
+
+
     @Test
     public void doSetMessage(){
         service.doSetMessage();
     }
+
+    @Test
+    public void doSingle(){
+        service.doSingle();
+        service.doSingleWithFullConstructor();
+    }
+
 
 }
