@@ -170,7 +170,7 @@ public class ExampleService {
     }
 
     public void  doSingle(){
-        ActivitySlimContext activitySlimContext=new ActivitySlimContext("myActivity");
+        ActivitySlimContext activitySlimContext=new ActivitySlimContext("doSingle");
         activitySlimContext.appendFieldsA(new TransactionResult("0","desc"));
         activitySlimContext.appendFieldsA(  new ObjectA(5),new ObjectB(10));
         activitySlimContext.putA("test","ja");
@@ -179,7 +179,7 @@ public class ExampleService {
     public void  doSingleWithFullConstructor(){
         Map<String,Object> m=new HashMap<>();
         m.put("haha",0);
-        ActivitySlimContext activitySlimContext=new ActivitySlimContext("myActivity",m,
+        ActivitySlimContext activitySlimContext=new ActivitySlimContext("doSingleWithFullConstructor",m,
                 new TransactionResult("0","desc"),
                 new ObjectA(5),
                 new ObjectB(10)
