@@ -21,6 +21,11 @@ public class ElfException extends RuntimeException {
         this.desc = desc;
     }
 
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
+
     public String getCode() {
         return code;
     }

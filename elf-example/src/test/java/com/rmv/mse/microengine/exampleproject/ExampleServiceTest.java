@@ -88,6 +88,7 @@ public class ExampleServiceTest {
     public void doSingle(){
         service.doSingle();
         service.doSingleWithFullConstructor();
+        service.doSingleThrows();
     }
 
 

@@ -169,6 +169,7 @@ public class ExampleService {
         return ActivityResult.SUCCESS;
     }
 
+
     public void  doSingle(){
         ActivitySlimContext activitySlimContext=new ActivitySlimContext("doSingle");
         activitySlimContext.appendFieldsA(new TransactionResult("0","desc"));
@@ -185,6 +186,20 @@ public class ExampleService {
                 new ObjectB(10)
         );
         activityLoggingHelper.writeActivity(activitySlimContext);
+    }
+
+    public void  doSingleThrows(){
+        ActivitySlimContext activitySlimContext=new ActivitySlimContext("doException");
+        try {
+            activitySlimContext.appendFieldsA(new TransactionResult("0", "desc"));
+            activitySlimContext.appendFieldsA(new ObjectA(5), new ObjectB(10));
+            activitySlimContext.putA("test", "ja");
+            throw new NullPointerException("exception Message");
+        }catch (Throwable t){
+            activitySlimContext.setThrowable(t);
+            activityLoggingHelper.writeActivity(activitySlimContext);
+        }
+
     }
 
 

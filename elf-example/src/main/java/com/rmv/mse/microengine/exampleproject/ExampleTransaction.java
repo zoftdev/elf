@@ -220,4 +220,10 @@ public class ExampleTransaction {
 
     }
 
+    @TransactionLog
+    public TransactionResult doSingle() {
+        exampleService.doSingle();
+        return new TransactionResult("0","Success");
+    }
+
 }

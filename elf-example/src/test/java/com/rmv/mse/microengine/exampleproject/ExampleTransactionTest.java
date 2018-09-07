@@ -109,4 +109,10 @@ public class ExampleTransactionTest {
         exampleTransaction.noLog();
     }
 
+    @Test
+    public void testWriteActivityViaUnderTransaction(){
+        exampleTransaction.doSingle();
+    }
+
+
 }

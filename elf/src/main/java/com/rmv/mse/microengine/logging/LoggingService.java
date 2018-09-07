@@ -90,6 +90,14 @@ public class LoggingService {
             Object ret = null;
             long begin = System.currentTimeMillis();
 //            logger.trace("{} begin {}",context.getTransactionId(),System.currentTimeMillis());
+            //process name
+            String processName = methodName;
+            if (methodMetaData.isOverrideName()) {
+                processName = methodMetaData.getOverrideName();
+            }
+            context.setFunctionId(processName);
+            marker.add(Markers.append(LoggingKey.PROCESS, processName));
+
             try {
                 ret = pjp.proceed();
                 if(ret instanceof NoLogInterface) return ret;
@@ -114,12 +122,7 @@ public class LoggingService {
             //type
             marker.add(Markers.append(LoggingKey.TYPE, LoggingKey.TRANSACTION));
 
-            //process name
-            String processName = methodName;
-            if (methodMetaData.isOverrideName()) {
-                processName = methodMetaData.getOverrideName();
-            }
-            marker.add(Markers.append(LoggingKey.PROCESS, processName));
+
 
             //time , begin
             marker.add(Markers.append(LoggingKey.PROCESS_TIME, processTime));
@@ -240,7 +243,7 @@ public class LoggingService {
 
             activityMarker.add(Markers.append(LoggingKey.ACTIVITY_ID, logActivityContext.getActivityId()));
 
-
+            activityMarker.add(Markers.append(LoggingKey.PROCESS, context.getFunctionId()));
             activityMarker.add(Markers.append(LoggingKey.PROCESS_TIME, diff));
             activityMarker.add(Markers.append(LoggingKey.BEGIN, begin));
             activityMarker.add(Markers.append(LoggingKey.ACTIVITY, activityName));

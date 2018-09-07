@@ -8,6 +8,7 @@ public class ActivitySlimContext {
     private Map<String, Object> keyValueMap;
     private List<Object> appendFields =null;
     private long begin;
+    private Throwable throwable;
 
     public ActivitySlimContext(String activityName, Map<String,Object> keyValueMap, Object... appendFields) {
         init(activityName);
@@ -66,5 +67,13 @@ public class ActivitySlimContext {
 
     public void changeBegin(long begin) {
         this.begin = begin;
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
     }
 }

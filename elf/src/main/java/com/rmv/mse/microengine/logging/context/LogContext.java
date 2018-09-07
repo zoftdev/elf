@@ -17,6 +17,7 @@ public class LogContext {
     //not show in activity
     Marker transactionOnlyMarker;
     String parentTransactionId;
+    String functionId;
 
     //child
     Set<Thread> childThread = new ConcurrentHashMap().newKeySet();
@@ -161,5 +162,13 @@ public class LogContext {
 
     public long getOverrideBegin() {
         return overrideBegin;
+    }
+
+    public String getFunctionId() {
+        return functionId;
+    }
+
+    public void setFunctionId(String functionId) {
+        this.functionId = functionId;
     }
 }
