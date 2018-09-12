@@ -133,6 +133,7 @@ public class LoggingService {
 
             //map
             marker.add(Markers.appendEntries(context._getTransactionLogMap()));
+            marker.add(Markers.appendEntries(context._getTransactionOnlyLogMap()));
 
             //parent
             if (context.getParentTransactionId() != null) {

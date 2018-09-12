@@ -78,6 +78,7 @@ public class ExampleTransaction {
     ) {
         LogContext context = logContextService.getCurrentContext();
         context.putT(LoggingKey.MSISDN,"2222");
+        context.putOnlyT("onlyT","yes");
 
         exampleService.exampleLogging("hlex","java");
         return new TransactionResult().setTranCode("0").setTranDesc("Success");

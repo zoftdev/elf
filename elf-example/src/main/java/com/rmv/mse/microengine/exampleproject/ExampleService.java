@@ -175,8 +175,15 @@ public class ExampleService {
         activitySlimContext.appendFieldsA(new TransactionResult("0","desc"));
         activitySlimContext.appendFieldsA(  new ObjectA(5),new ObjectB(10));
         activitySlimContext.putA("test","ja");
+        logContextService.getCurrentContext().setCurrentActivitySlimContext(activitySlimContext);
+        callSomeOne();
         activityLoggingHelper.writeActivity(activitySlimContext);
     }
+
+    private void callSomeOne() {
+        logContextService.getCurrentContext().getCurrentActivitySlimContext().putA("test by inner activity","ja");
+    }
+
     public void  doSingleWithFullConstructor(){
         Map<String,Object> m=new HashMap<>();
         m.put("haha",0);

@@ -1,5 +1,6 @@
 package com.rmv.mse.microengine.logging.context;
 
+import com.rmv.mse.microengine.logging.model.ActivitySlimContext;
 import net.logstash.logback.marker.Markers;
 import org.slf4j.Marker;
 
@@ -13,11 +14,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LogContext {
     String transactionId;
     Map<String, Object> transactionLogMap;
+    Map<String, Object> transactionOnlyLogMap;
     Marker transactionMarker;
     //not show in activity
     Marker transactionOnlyMarker;
     String parentTransactionId;
     String functionId;
+
+
+
+    ActivitySlimContext currentActivitySlimContext;
 
     //child
     Set<Thread> childThread = new ConcurrentHashMap().newKeySet();
@@ -29,9 +35,10 @@ public class LogContext {
 
     }
 
-    public LogContext(String transactionId, Map<String, Object> transactionLogMap) {
+    public LogContext(String transactionId, Map<String, Object> transactionLogMap, Map<String, Object> transactionOnlyLogMap) {
         this.transactionId = transactionId;
         this.transactionLogMap = transactionLogMap;
+        this.transactionOnlyLogMap=transactionOnlyLogMap;
         transactionMarker = Markers.appendFields(null);
         transactionOnlyMarker = Markers.appendFields(null);
     }
@@ -39,6 +46,7 @@ public class LogContext {
     public static LogContext createBasic() {
         return new LogContext(
                 UUID.randomUUID().toString(),
+                new ConcurrentHashMap<>(),
                 new ConcurrentHashMap<>()
 
 
@@ -71,6 +79,10 @@ public class LogContext {
     public Object putT(String key, Object v) {
         return transactionLogMap.put(key, v);
     }
+    public Object putOnlyT(String key, Object v) {
+        return transactionOnlyLogMap.put(key, v);
+    }
+
 
     /**
      * put to activity level
@@ -92,6 +104,13 @@ public class LogContext {
         this.transactionLogMap = transactionLogMap;
     }
 
+    public Map<String, Object> _getTransactionOnlyLogMap() {
+        return transactionOnlyLogMap;
+    }
+
+    public void _setTransactionOnlyLogMap(Map<String, Object> transactionOnlyLogMap) {
+        this.transactionOnlyLogMap = transactionOnlyLogMap;
+    }
 
     //beware, marker not merge json element , lead to duplicate element
     public void appendFieldsA(Object o) {
@@ -171,4 +190,14 @@ public class LogContext {
     public void setFunctionId(String functionId) {
         this.functionId = functionId;
     }
+
+
+    public ActivitySlimContext getCurrentActivitySlimContext() {
+        return currentActivitySlimContext;
+    }
+
+    public void setCurrentActivitySlimContext(ActivitySlimContext currentActivitySlimContext) {
+        this.currentActivitySlimContext = currentActivitySlimContext;
+    }
+
 }
