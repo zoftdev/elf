@@ -4,3 +4,6 @@ elf:
   application_name: example-app
   kafka:
     bootstrap-servers: 10.95.108.214:9092
+#logging:
+#  level:
+#    stash-activity: warn
